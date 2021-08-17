@@ -1,0 +1,22 @@
+.scroller {
+  font-family: "Rubik", sans-serif;
+
+  max-width: 450px;
+  height: 300px;
+  padding: 0 16px 0 0;
+}
+
+.content {
+  display: grid;
+  row-gap: 12px;
+}
+
+.content > p {
+  margin: 0;
+}
+
+.content > img {
+  margin: auto;
+  max-width: 300px;
+  max-height: 150px;
+}

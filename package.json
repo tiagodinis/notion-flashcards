@@ -1,0 +1,21 @@
+{
+  "name": "notion-flashcards",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon server.js",
+    "frontend": "cd frontend && npm start",
+    "start": "concurrently \"npm run dev\" \"npm run frontend\""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@notionhq/client": "^0.2.0",
+    "concurrently": "^6.2.0",
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1",
+    "react-router-dom": "^5.2.0"
+  }
+}
