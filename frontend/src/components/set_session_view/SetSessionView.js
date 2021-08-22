@@ -1,15 +1,14 @@
 import { useState, useEffect, useRef } from "react"
 import { useParams } from "react-router-dom"
+import { AnimatePresence, motion } from "framer-motion"
 import styled from "styled-components"
-// import Flashcard from "./Flashcard"
-
-import CustomScroller from "react-custom-scroller"
-import styles from "../../Example.module.css";
+import Flashcard from "./Flashcard"
 
 export default function SetSessionView() {
   const flashcards = useRef([])
   const setName = useRef("")
-  const [currentFlashcard, setCurrentFlashcard] = useState(null)
+  const [showable, setShowable] = useState(null)
+  const [exitX, setExitX] = useState("100%")
   const [error, setError] = useState("")
   let { setID } = useParams()
 
@@ -23,20 +22,40 @@ export default function SetSessionView() {
       .then(data => {
         flashcards.current = data.flashcards
         setName.current = data.setName
-        console.log(data.setName)
-        setCurrentFlashcard(0)
-        setError("")
+        setShowable(getShowableCardsFromIndex(0))
+        setError("") // FIXME: what is this?
       })
       .catch(err => setError(err.message))
   }, [])
 
+  // Max 3 untested cards from given index forward (looping the array)
+  function getShowableCardsFromIndex(from) {
+    const length = flashcards.current.length
+    let result = []
+
+    for (let i = 0; result.length < 3 && i < length; ++i) {
+      const currentIndex = (from + i) % length
+      if (flashcards.current[currentIndex].sessionResult === undefined)
+        result.push(currentIndex)
+    }
+
+    return result
+  }
+
+  function setCardResult(isCorrect) {
+    flashcards.current[showable[0]].sessionResult = isCorrect
+    setShowable(getShowableCardsFromIndex(showable[0]))
+    // TODO: If all cards tested, show session report
+  }
+
+  function skip() {
+    if (showable.length > 1)
+      setShowable(getShowableCardsFromIndex(showable[1]))
+  } 
+
   return (
     <>
       {/* {error && <div>{error}</div>} */}
-
-      {/* {currentFlashcard !== null && 
-        <Flashcard cardData={flashcards.current[currentFlashcard]}/>
-      } */}
 
       <SessionHeader>
         <GoBackArrow>...</GoBackArrow>
@@ -53,28 +72,39 @@ export default function SetSessionView() {
         <QuestionMark>??</QuestionMark>
       </SessionHeader>
 
-      <Flashcard>
-        <CardHeader>
-          <CardSide>
-            Front
-          </CardSide>
-          <CardLvl>
-            Lvl. 3
-          </CardLvl>
-        </CardHeader>
-        <Content>
-          <CustomScroller className={styles.scroller} innerClassName={styles.content}>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-            
-            Amet consectetur adipiscing elit ut aliquam purus. Ut diam quam nulla porttitor massa id. Sit amet consectetur adipiscing elit pellentesque habitant morbi. Tempus egestas sed sed risus pretium quam. Aliquam etiam erat velit scelerisque. Sit amet luctus venenatis lectus magna fringilla urna porttitor rhoncus. Quam nulla porttitor massa id neque. Fermentum et sollicitudin ac orci phasellus. Eget mauris pharetra et ultrices neque ornare. Nullam non nisi est sit amet. Magna etiam tempor orci eu lobortis elementum nibh tellus.
-            
-            Ut sem nulla pharetra diam sit amet nisl suscipit. Tortor pretium viverra suspendisse potenti nullam. Phasellus egestas tellus rutrum tellus pellentesque eu tincidunt tortor. Risus nec feugiat in fermentum posuere urna. Nullam eget felis eget nunc. Nibh mauris cursus mattis molestie. Magna eget est lorem ipsum dolor sit amet consectetur. Sit amet commodo nulla facilisi nullam. Diam vulputate ut pharetra sit amet aliquam id diam maecenas. Id leo in vitae turpis massa. Lacus viverra vitae congue eu consequat ac felis donec. Duis at consectetur lorem donec. Pellentesque nec nam aliquam sem. Orci sagittis eu volutpat odio facilisis. Dolor sit amet consectetur adipiscing elit pellentesque habitant morbi tristique.
-          </CustomScroller>
-        </Content>
-        <CardFooter>
-          Click to flip
-        </CardFooter>
-      </Flashcard>
+      {showable !== null &&
+        <CardStack>
+          <AnimatePresence>
+            {showable.length > 2 &&
+              <Flashcard
+                key={showable[2]} cardData={flashcards.current[showable[2]]}
+                initial={{scale: 0, x: 30, opacity: 0}}
+                animate={{scale: 0.9, x: 28, opacity: 0.25}}
+              />
+            }
+            {showable.length > 1 &&
+              <Flashcard
+                key={showable[1]} cardData={flashcards.current[showable[1]]}
+                initial={{scale: 0.9, x: 24, opacity: 0.25}}
+                animate={{scale: 0.96, x: 12, opacity: 0.5}}
+              />
+            }
+            {showable.length > 0 &&
+              <Flashcard
+                key={showable[0]} cardData={flashcards.current[showable[0]]}
+                exitX={exitX} setExitX={setExitX}
+                setCardResult={setCardResult}
+                drag="x"
+                animate={{scale: 1, x: 0, opacity: 1}}
+                canFlip
+              />
+            }
+          </AnimatePresence>
+        </CardStack>
+      }
+
+      <button onClick={skip}>Skip</button>
+      <button>Undo</button>
     </>
   )
 }
@@ -134,49 +164,11 @@ const QuestionMark = styled.div`
   border: 1px solid black;
 `
 
-const Flashcard = styled.div`
+const CardStack = styled(motion.div)`
   position: absolute;
   left: calc(50% - 160px);
   top: 100px;
-
-  width: 300px;
-  /* width: 240px; */
-  height: 385px;
-  border-radius: 25px;
-  background-color: white;
-  box-shadow: 0 0 50px 1px rgba(0,0,0,.2);
-
-  font-family: "Rubik", sans-serif;
+  width: 330px;
 
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-`
-
-const CardHeader = styled.div`
-  width: 210px;
-  height: 16px;
-  margin: 20px 0px;
-
-  display: flex;
-  justify-content: space-between;
-`
-
-const CardSide = styled.div`
-`
-
-const CardLvl = styled.div`
-`
-
-const Content = styled.div`
-  height: 300px;
-  width: 210px;
-`
-
-const CardFooter = styled.div`
-  margin-top: 5px;
-  width: 210px;
-  font-size: 12px;
-  text-align: center;
 `
