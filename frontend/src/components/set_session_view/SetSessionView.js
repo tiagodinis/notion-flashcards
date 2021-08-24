@@ -1,7 +1,9 @@
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect, useRef, useContext } from "react"
 import { useParams } from "react-router-dom"
+import { FadeContext } from "../utilities/FadeContainer"
 import { AnimatePresence, motion } from "framer-motion"
 import styled from "styled-components"
+import SessionHeader from "./SessionHeader"
 import Flashcard from "./Flashcard"
 
 export default function SetSessionView() {
@@ -9,8 +11,10 @@ export default function SetSessionView() {
   const setName = useRef("")
   const [showable, setShowable] = useState(null)
   const [exitX, setExitX] = useState("100%")
+  const [progress, setProgress] = useState(0)
   const [error, setError] = useState("")
   let { setID } = useParams()
+  const startFade = useContext(FadeContext)
 
   // Fetch and show session data
   useEffect(() => {
@@ -45,32 +49,25 @@ export default function SetSessionView() {
   function setCardResult(isCorrect) {
     flashcards.current[showable[0]].sessionResult = isCorrect
     setShowable(getShowableCardsFromIndex(showable[0]))
+    setProgress(flashcards.current.reduce((acc, f) => acc + (f.sessionResult !== undefined ? 1 : 0), 0) / flashcards.current.length)
     // TODO: If all cards tested, show session report
   }
 
   function skip() {
     if (showable.length > 1)
       setShowable(getShowableCardsFromIndex(showable[1]))
-  } 
+  }
 
   return (
     <>
       {/* {error && <div>{error}</div>} */}
 
-      <SessionHeader>
-        <GoBackArrow>...</GoBackArrow>
-        <HeaderDataContainer>
-          <SetName>{setName.current}</SetName>
-          <ProgressContainer>
-            <ProgressCardNr>25 cards</ProgressCardNr>
-            <ProgressBar>
-              <ProgressBarBackground/>
-              <ProgressBarForeground/>
-            </ProgressBar>
-          </ProgressContainer>
-        </HeaderDataContainer>
-        <QuestionMark>??</QuestionMark>
-      </SessionHeader>
+      {setName &&
+        <SessionHeader
+          setName={setName.current} setSize={flashcards.current.length}
+          onGoBack={() => startFade("/")} progress={progress}
+        />
+      }
 
       {showable !== null &&
         <CardStack>
@@ -78,7 +75,7 @@ export default function SetSessionView() {
             {showable.length > 2 &&
               <Flashcard
                 key={showable[2]} cardData={flashcards.current[showable[2]]}
-                initial={{scale: 0, x: 30, opacity: 0}}
+                initial={{scale: 0, x: 28, opacity: 0}}
                 animate={{scale: 0.9, x: 28, opacity: 0.25}}
               />
             }
@@ -93,76 +90,17 @@ export default function SetSessionView() {
               <Flashcard
                 key={showable[0]} cardData={flashcards.current[showable[0]]}
                 exitX={exitX} setExitX={setExitX}
-                setCardResult={setCardResult}
-                drag="x"
+                skip={skip} setCardResult={setCardResult}
                 animate={{scale: 1, x: 0, opacity: 1}}
-                canFlip
+                drag canFlip
               />
             }
           </AnimatePresence>
         </CardStack>
       }
-
-      <button onClick={skip}>Skip</button>
-      <button>Undo</button>
     </>
   )
 }
-
-const SessionHeader = styled.div`
-  font-family: "Rubik", sans-serif;
-  display: flex;
-  border: 1px solid black;
-`
-
-const GoBackArrow = styled.div`
-  margin-left: 10px;
-  border: 1px solid black;
-`
-
-const HeaderDataContainer = styled.div`
-  border: 1px solid black;
-`
-
-const SetName = styled.div`
-  border: 1px solid black;
-`
-
-const ProgressContainer = styled.div`
-  display: flex;
-  border: 1px solid black;
-`
-
-const ProgressCardNr = styled.div`
-  border: 1px solid black;
-`
-
-const ProgressBar = styled.div`
-  border: 1px solid black;
-`
-
-const ProgressBarBackground = styled.div`
-  position: relative;
-  top: 6px;
-  width: 100px;
-  height: 8px;
-  background-color: #e2e2e2;
-  border-radius: 8px;
-`
-
-const ProgressBarForeground = styled.div`
-  position: relative;
-  top: -2px;
-  width: 80px;
-  height: 8px;
-  background-color: #47c690;
-  border-radius: 8px;
-`
-
-const QuestionMark = styled.div`
-  flex-grow: 1;
-  border: 1px solid black;
-`
 
 const CardStack = styled(motion.div)`
   position: absolute;

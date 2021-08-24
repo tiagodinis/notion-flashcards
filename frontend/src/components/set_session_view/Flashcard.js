@@ -9,22 +9,35 @@ export default function Flashcard(props) {
   const [isFlipped, setIsFlipped] = useState(false)
   const isDragging = useRef(false)
   const x = useMotionValue(0)
-  const rotateZ = useTransform(x, [-150, 150], props.drag ? [-15, 15] : [0, 0])
-
+  const y = useMotionValue(0)
+  const rotateZByX = useTransform(x, [-110, 110], props.drag ? [-15, 15] : [0, 0])
+  const rotateZByY = useTransform(y, [-30, 30], props.drag ? [10, -10] : [0, 0])
+  const rotateZ = useTransform([rotateZByX, rotateZByY], arr => arr[0] + arr[1])
+  
   // (!) Combine drag and flip rotation transformation sequence (they use different defaults)
-  function template({ rotateZ, x, rotateY, scale }) {
-    return `perspective(1000px) translate3d(${x}, 0px, 0px) rotateZ(${rotateZ}) rotateY(${rotateY}) scale(${scale})`
+  function template({ x, y, rotateZ, rotateY, scale }) {
+    return `perspective(1000px) translate3d(${x}, ${y}, 0px) rotateZ(${rotateZ}) rotateY(${rotateY}) scale(${scale})`
   }
 
   function handleDragEnd(event, info) {
     setTimeout(() => isDragging.current = false, 1) // (!) Avoid triggering flip
-    if (info.offset.x < -100) {
-      props.setExitX(-250)
-      props.setCardResult(false)
+    if (y.get() === 0) { // Horizontal movement
+      if (info.offset.x < -150) {
+        props.setExitX(-250)
+        props.setCardResult(false)
+      }
+      else if (info.offset.x > 150) {
+        props.setExitX(250)
+        props.setCardResult(true)
+      }
     }
-    else if (info.offset.x > 100) {
-      props.setExitX(250)
-      props.setCardResult(true)
+    else if (x.get() === 0) { // Vertical movement
+      if (info.offset.y > 70) {
+        props.skip()
+      }
+      if (info.offset.y < -70) {
+        console.log("undo")
+      }
     }
   }
 
@@ -32,12 +45,14 @@ export default function Flashcard(props) {
     <FlashcardContainer
       onClick={() => {if (props.canFlip && !isDragging.current) setIsFlipped(!isFlipped)}}
       transformTemplate={template}
+      dragDirectionLock
       drag={props.drag}
       dragConstraints={{left: 0, right: 0, top: 0, bottom: 0}}
+      dragTransition={{ bounceStiffness: 600, bounceDamping: 20 }}
       onDragStart={() => isDragging.current = true}
       onDragEnd={handleDragEnd}
       whileDrag={{cursor: "grabbing"}}
-      style={{x: x, rotateZ: rotateZ, rotateY: 0, scale: 1}}
+      style={{x: x, y: y, rotateZ: rotateZ, rotateY: 0, scale: 1}}
       initial={props.initial}
       animate={{...props.animate, rotateY: isFlipped ? 180 : 0}}
       exit={{
@@ -47,54 +62,34 @@ export default function Flashcard(props) {
         transition: { duration: 0.2 },
       }}
     >
-      <Side>
-        <CardHeader>
-          <CardSide>Front</CardSide>
-          <CardLvl>Lvl. {props.cardData.lvl}</CardLvl>
-        </CardHeader>
+      <Side initial={{rotateY: "0deg"}}>
         <Content>
           <CustomScroller className={styles.scroller} innerClassName={styles.content}>
-            {props.cardData.front}
+          {props.cardData.front}
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+          
+          Amet consectetur adipiscing elit ut aliquam purus. Ut diam quam nulla porttitor massa id. Sit amet consectetur adipiscing elit pellentesque habitant morbi. Tempus egestas sed sed risus pretium quam. Aliquam etiam erat velit scelerisque. Sit amet luctus venenatis lectus magna fringilla urna porttitor rhoncus. Quam nulla porttitor massa id neque. Fermentum et sollicitudin ac orci phasellus. Eget mauris pharetra et ultrices neque ornare. Nullam non nisi est sit amet. Magna etiam tempor orci eu lobortis elementum nibh tellus.
+          
+          Ut sem nulla pharetra diam sit amet nisl suscipit. Tortor pretium viverra suspendisse potenti nullam. Phasellus egestas tellus rutrum tellus pellentesque eu tincidunt tortor. Risus nec feugiat in fermentum posuere urna. Nullam eget felis eget nunc. Nibh mauris cursus mattis molestie. Magna eget est lorem ipsum dolor sit amet consectetur. Sit amet commodo nulla facilisi nullam. Diam vulputate ut pharetra sit amet aliquam id diam maecenas. Id leo in vitae turpis massa. Lacus viverra vitae congue eu consequat ac felis donec. Duis at consectetur lorem donec. Pellentesque nec nam aliquam sem. Orci sagittis eu volutpat odio facilisis. Dolor sit amet consectetur adipiscing elit pellentesque habitant morbi tristique.
           </CustomScroller>
         </Content>
-        <CardFooter>
-          Click to flip
-        </CardFooter>
+      </Side>
+      <Side initial={{rotateY: 180}}>
+        <Content>
+          <CustomScroller className={styles.scroller} innerClassName={styles.content}>
+          {props.cardData.back}
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+          </CustomScroller>
+        </Content>
       </Side>
     </FlashcardContainer>
-
-
-      // <Card
-      //   onClick={() => setIsFlipped(!isFlipped)}
-      //   style={{transformPerspective: "600px"}}
-      //   animate={{rotateX: isFlipped ? 180 : 0}}
-      //   transition={{duration: 0.4}}
-      // >
-      //   {/* <Arrow/> */}
-      //   <Content>
-      //   Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Vulputate sapien nec sagittis aliquam malesuada bibendum arcu
-      //   </Content>
-      //   {/* <Arrow/> */}
-      //   <PageIndicator>
-      //     <IndicatorBall />
-      //     <IndicatorBall selected/>
-      //     <IndicatorBall />
-      //   </PageIndicator>
-      //   {/* <Content initial={{rotateX: "0deg"}}>{cardData.front}</Content> */}
-      //   {/* <Content initial={{rotateX: 180}}>{cardData.back}</Content> */}
-      // </Card>
   )
 }
 
-const Side = styled(motion.div)`
-
-`
-
 const FlashcardContainer = styled(motion.div)`
   position: absolute;
-
-  width: 300px;
-  height: 385px;
+  width: 310px;
+  height: 420px;
   border-radius: 25px;
   background-color: grey;
   ${'' /* background-color: white; */}
@@ -111,31 +106,20 @@ const FlashcardContainer = styled(motion.div)`
   user-select: none;
 `
 
-const CardHeader = styled(motion.div)`
-  width: 210px;
-  height: 16px;
-  margin: 20px 0px;
-
-  display: flex;
-  justify-content: space-between;
-`
-
-const CardSide = styled(motion.div)`
-`
-
-const CardLvl = styled(motion.div)`
+const Side = styled(motion.div)`
+  backface-visibility: hidden;
 `
 
 const Content = styled(motion.div)`
-  height: 300px;
-  width: 210px;
+  margin-top: 25px;
+  margin-left: 13px;
+  width: 266px;
+  height: 360px;
+  overflow: hidden;
 `
 
-const CardFooter = styled(motion.div)`
-  margin-top: 5px;
-  width: 210px;
-  font-size: 12px;
-  text-align: center;
+const Footer = styled(motion.div)`
+
 `
 
 // Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
@@ -143,70 +127,3 @@ const CardFooter = styled(motion.div)`
 // Amet consectetur adipiscing elit ut aliquam purus. Ut diam quam nulla porttitor massa id. Sit amet consectetur adipiscing elit pellentesque habitant morbi. Tempus egestas sed sed risus pretium quam. Aliquam etiam erat velit scelerisque. Sit amet luctus venenatis lectus magna fringilla urna porttitor rhoncus. Quam nulla porttitor massa id neque. Fermentum et sollicitudin ac orci phasellus. Eget mauris pharetra et ultrices neque ornare. Nullam non nisi est sit amet. Magna etiam tempor orci eu lobortis elementum nibh tellus.
 
 // Ut sem nulla pharetra diam sit amet nisl suscipit. Tortor pretium viverra suspendisse potenti nullam. Phasellus egestas tellus rutrum tellus pellentesque eu tincidunt tortor. Risus nec feugiat in fermentum posuere urna. Nullam eget felis eget nunc. Nibh mauris cursus mattis molestie. Magna eget est lorem ipsum dolor sit amet consectetur. Sit amet commodo nulla facilisi nullam. Diam vulputate ut pharetra sit amet aliquam id diam maecenas. Id leo in vitae turpis massa. Lacus viverra vitae congue eu consequat ac felis donec. Duis at consectetur lorem donec. Pellentesque nec nam aliquam sem. Orci sagittis eu volutpat odio facilisis. Dolor sit amet consectetur adipiscing elit pellentesque habitant morbi tristique.
-
-// OLD ---------------------------------------------------------------------------------------
-
-// const Card = styled(motion.div)`
-//   position: absolute;
-//   left: calc(50% - 160px);
-//   top: calc(60% - 100px);
-
-//   width: 320px;
-//   height: 200px;
-//   border-radius: 20px;
-//   box-shadow: 0 0 50px 1px rgba(0, 0, 0, .2);
-//   background-color: hsl(251, 49%, 66%);
-
-//   display: flex;
-//   align-items: center;
-//   justify-content: center;
-
-//   cursor: pointer;
-//   user-select: none;
-// `
-
-// const Content = styled(motion.div)`
-//   position: relative;
-//   bottom: 8px;
-//   box-sizing: border-box;
-//   padding: 0px 50px;
-//   /* background-color: red;  */
-//   font-family: "Rubik",sans-serif;
-//   text-justify: center;
-// `
-
-// const Arrow = styled(motion.div)`
-//   width: 20px;
-//   height: 20px;
-//   background-color: green;
-// `
-
-// const PageIndicator = styled(motion.div)`
-//   position: absolute;
-//   bottom: 15px;
-
-//   /* width: 200px; */
-//   /* height: 50px; */
-//   /* border: 1px solid black; */
-
-//   display: flex;
-//   justify-content: center;
-//   align-items: center;
-// `
-
-// const IndicatorBall = styled(motion.div)`
-//   --radius: 8px;
-//   width: var(--radius);
-//   height: var(--radius);
-//   border-radius: var(--radius);
-//   margin: 3px;
-//   background-color: rgba(255, 255, 255, ${props => props.selected ? 1 : 0.5});
-// `
-
-
-// // const Content = styled(motion.div)`
-// //   position: absolute;
-// //   backface-visibility: hidden;
-
-// //   font-family: "Montserrat", sans-serif;
-// // `
