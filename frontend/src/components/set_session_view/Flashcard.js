@@ -7,7 +7,7 @@ import styles from "../../Example.module.css";
 
 export default function Flashcard(props) {
   const [isFlipped, setIsFlipped] = useState(false)
-  const [wee, setWee] = useState(false)
+  const [isDraggingScroller, setIsDraggingScroller] = useState(false)
   const isDragging = useRef(false)
   const x = useMotionValue(0)
   const y = useMotionValue(0)
@@ -51,7 +51,7 @@ export default function Flashcard(props) {
       onClick={() => {if (props.canFlip && !isDragging.current) setIsFlipped(!isFlipped)}}
       transformTemplate={template}
       dragDirectionLock
-      drag={wee ? {} : props.drag}
+      drag={isDraggingScroller ? {} : props.drag}
       dragConstraints={{left: 0, right: 0, top: 0, bottom: 0}}
       dragTransition={{ bounceStiffness: 600, bounceDamping: 20 }}
       onDragStart={() => isDragging.current = true}
@@ -70,14 +70,17 @@ export default function Flashcard(props) {
       <Side initial={{rotateY: "0deg"}}>
         <Content>
           <CustomScroller className={styles.scroller} innerClassName={styles.content}
-            onClick={() => setWee(!wee)}
+            onMouseDown={() => setIsDraggingScroller(true)}
+            onMouseUp={() => setIsDraggingScroller(false)}
           >
+          <div onMouseDown={e => e.stopPropagation()}>
           {props.cardData.front}
           Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
           
           Amet consectetur adipiscing elit ut aliquam purus. Ut diam quam nulla porttitor massa id. Sit amet consectetur adipiscing elit pellentesque habitant morbi. Tempus egestas sed sed risus pretium quam. Aliquam etiam erat velit scelerisque. Sit amet luctus venenatis lectus magna fringilla urna porttitor rhoncus. Quam nulla porttitor massa id neque. Fermentum et sollicitudin ac orci phasellus. Eget mauris pharetra et ultrices neque ornare. Nullam non nisi est sit amet. Magna etiam tempor orci eu lobortis elementum nibh tellus.
           
           Ut sem nulla pharetra diam sit amet nisl suscipit. Tortor pretium viverra suspendisse potenti nullam. Phasellus egestas tellus rutrum tellus pellentesque eu tincidunt tortor. Risus nec feugiat in fermentum posuere urna. Nullam eget felis eget nunc. Nibh mauris cursus mattis molestie. Magna eget est lorem ipsum dolor sit amet consectetur. Sit amet commodo nulla facilisi nullam. Diam vulputate ut pharetra sit amet aliquam id diam maecenas. Id leo in vitae turpis massa. Lacus viverra vitae congue eu consequat ac felis donec. Duis at consectetur lorem donec. Pellentesque nec nam aliquam sem. Orci sagittis eu volutpat odio facilisis. Dolor sit amet consectetur adipiscing elit pellentesque habitant morbi tristique.
+          </div>
           </CustomScroller>
         </Content>
       </Side>
