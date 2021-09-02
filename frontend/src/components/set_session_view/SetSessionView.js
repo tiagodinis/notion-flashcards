@@ -75,14 +75,14 @@ export default function SetSessionView() {
             {showable.length > 2 &&
               <Flashcard
                 key={showable[2]} cardData={flashcards.current[showable[2]]}
-                initial={{scale: 0, x: 28, opacity: 0}}
+                // initial={{scale: 0.9, x: 28, opacity: 0}}
                 animate={{scale: 0.9, x: 28, opacity: 0.25}}
               />
             }
             {showable.length > 1 &&
               <Flashcard
                 key={showable[1]} cardData={flashcards.current[showable[1]]}
-                initial={{scale: 0.9, x: 24, opacity: 0.25}}
+                // initial={{scale: 0.9, x: 24, opacity: 0.25}}
                 animate={{scale: 0.96, x: 12, opacity: 0.5}}
               />
             }

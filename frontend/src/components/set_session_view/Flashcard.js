@@ -7,6 +7,7 @@ import styles from "../../Example.module.css";
 
 export default function Flashcard(props) {
   const [isFlipped, setIsFlipped] = useState(false)
+  const [wee, setWee] = useState(false)
   const isDragging = useRef(false)
   const x = useMotionValue(0)
   const y = useMotionValue(0)
@@ -17,6 +18,10 @@ export default function Flashcard(props) {
   // (!) Combine drag and flip rotation transformation sequence (they use different defaults)
   function template({ x, y, rotateZ, rotateY, scale }) {
     return `perspective(1000px) translate3d(${x}, ${y}, 0px) rotateZ(${rotateZ}) rotateY(${rotateY}) scale(${scale})`
+  }
+
+  function handleScrollDrag() {
+    
   }
 
   function handleDragEnd(event, info) {
@@ -46,7 +51,7 @@ export default function Flashcard(props) {
       onClick={() => {if (props.canFlip && !isDragging.current) setIsFlipped(!isFlipped)}}
       transformTemplate={template}
       dragDirectionLock
-      drag={props.drag}
+      drag={wee ? {} : props.drag}
       dragConstraints={{left: 0, right: 0, top: 0, bottom: 0}}
       dragTransition={{ bounceStiffness: 600, bounceDamping: 20 }}
       onDragStart={() => isDragging.current = true}
@@ -64,7 +69,9 @@ export default function Flashcard(props) {
     >
       <Side initial={{rotateY: "0deg"}}>
         <Content>
-          <CustomScroller className={styles.scroller} innerClassName={styles.content}>
+          <CustomScroller className={styles.scroller} innerClassName={styles.content}
+            onClick={() => setWee(!wee)}
+          >
           {props.cardData.front}
           Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
           
@@ -74,14 +81,14 @@ export default function Flashcard(props) {
           </CustomScroller>
         </Content>
       </Side>
-      <Side initial={{rotateY: 180}}>
+      {/* <Side initial={{rotateY: 180}}>
         <Content>
           <CustomScroller className={styles.scroller} innerClassName={styles.content}>
           {props.cardData.back}
           Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
           </CustomScroller>
         </Content>
-      </Side>
+      </Side> */}
     </FlashcardContainer>
   )
 }
@@ -107,6 +114,7 @@ const FlashcardContainer = styled(motion.div)`
 `
 
 const Side = styled(motion.div)`
+  position: absolute;
   backface-visibility: hidden;
 `
 
@@ -116,6 +124,15 @@ const Content = styled(motion.div)`
   width: 266px;
   height: 360px;
   overflow: hidden;
+
+  /* overflow-y: scroll;
+  scrollbar-color: #676767 transparent;
+  scrollbar-width: thin;
+  scrollbar-gutter: stable;
+
+  &:hover {
+    scrollbar-color: #676767 transparent;
+  } */
 `
 
 const Footer = styled(motion.div)`
