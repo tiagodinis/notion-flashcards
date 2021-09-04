@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react"
 import { AnimatePresence, motion } from "framer-motion"
 import styled from "styled-components"
+import ArrowHead2SVG from "../svg/ArrowHead2SVG"
 
 export default function UpButton() {
   const [visibleUpButton, setVisibleUpButton] = useState(false)
@@ -18,7 +19,7 @@ export default function UpButton() {
           initial={{opacity: 0}} animate={{opacity: 1}} exit={{opacity: 0}}
           onClick={() => window.scrollTo({top: 0, behavior: "smooth"})}
         >
-          <img src="images/up-arrow.svg" alt="Hourglass" width="32"/>
+          <ArrowHead2SVG dim="32"/>
         </UpButtonContainer>
       }
     </AnimatePresence>)

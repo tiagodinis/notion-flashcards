@@ -1,7 +1,7 @@
 import { useState } from "react"
 import styled from "styled-components"
 import { motion } from "framer-motion"
-import repeat from "../../images/repeat.svg"
+import RepeatSVG from "../svg/RepeatSVG"
 
 export default function Set({set, gridIndex, onSetSelected}) {
   const [hovered, setHovered] = useState(false)
@@ -28,7 +28,7 @@ export default function Set({set, gridIndex, onSetSelected}) {
         <SetDetails hovered={hovered}>
           <div>{set.flashcards.length + (set.flashcards.length === 1 ? " card" : " cards")}</div>
           <ExpirationContainer>
-            <img src={repeat} alt="Hourglass"/>
+            <RepeatSVG dim={19}/>
             <div>{(set.avg_expiration || 0) + (set.avg_expiration === 1 ? " day" : " days")}</div>
           </ExpirationContainer>
         </SetDetails>
@@ -72,10 +72,6 @@ const SetDetails = styled(motion.div)`
 
 const ExpirationContainer = styled(motion.div)`
   display: flex;
-
-  img {
-    width: 19px;
-  }
 
   div {
     margin-left: 6px;

@@ -1,6 +1,8 @@
 import { motion, animate, useMotionValue, useTransform } from "framer-motion"
 import { useEffect } from "react"
 import styled from "styled-components"
+import ArrowHead2SVG from "../svg/ArrowHead2SVG"
+import QuestionsMarkSVG from "../svg/QuestionsMarkSVG"
 
 export default function SessionHeader({ setName, setSize, onGoBack, progress }) {
   const barMaxWidth = 100;
@@ -19,12 +21,11 @@ export default function SessionHeader({ setName, setSize, onGoBack, progress }) 
   return (
     <SessionHeaderContainer>
       <GoBackArrow onClick={onGoBack} initial={{rotate: -90}} whileHover={{x: -3}}>
-        <img src={`${process.env.PUBLIC_URL}/images/up-arrow.svg`} alt="Hourglass" width="16"/>
+        <ArrowHead2SVG color="rgb(158, 158, 167)"/>
       </GoBackArrow>
 
       <HeaderDataContainer>
         <SetName>{setName}</SetName>
-        {/* <SetName>Country capitals Country capitals Country capitals au</SetName> */}
         <ProgressContainer>
           <SetSize>{setSize} cards</SetSize>
           <ProgressBar maxWidth={barMaxWidth}>
@@ -35,7 +36,7 @@ export default function SessionHeader({ setName, setSize, onGoBack, progress }) 
       </HeaderDataContainer>
 
       <QuestionMark whileHover={{rotate: 10}}>
-        <img src={`${process.env.PUBLIC_URL}/images/question-mark.svg`} alt="Question mark" width="18"/>
+        <QuestionsMarkSVG dim="18" color="rgb(158, 158, 167)"/>
       </QuestionMark>
     </SessionHeaderContainer>
   )
