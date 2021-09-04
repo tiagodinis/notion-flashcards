@@ -1,6 +1,7 @@
 import { useState } from "react"
 import styled from "styled-components"
 import { motion } from "framer-motion"
+import repeat from "../../images/repeat.svg"
 
 export default function Set({set, gridIndex, onSetSelected}) {
   const [hovered, setHovered] = useState(false)
@@ -27,7 +28,7 @@ export default function Set({set, gridIndex, onSetSelected}) {
         <SetDetails hovered={hovered}>
           <div>{set.flashcards.length + (set.flashcards.length === 1 ? " card" : " cards")}</div>
           <ExpirationContainer>
-            <img src="images/repeat.svg" alt="Hourglass"/>
+            <img src={repeat} alt="Hourglass"/>
             <div>{(set.avg_expiration || 0) + (set.avg_expiration === 1 ? " day" : " days")}</div>
           </ExpirationContainer>
         </SetDetails>
@@ -89,9 +90,9 @@ const SetTitle = styled(motion.div)`
   display: -webkit-box !important;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
+  word-break: break-word;
   white-space: normal;
   overflow: hidden;
-  text-overflow: ellipsis; 
 `
 
 const setVariants = {

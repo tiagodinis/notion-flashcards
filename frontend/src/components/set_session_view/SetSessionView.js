@@ -5,6 +5,7 @@ import { AnimatePresence, motion } from "framer-motion"
 import styled from "styled-components"
 import SessionHeader from "./SessionHeader"
 import Flashcard from "./Flashcard"
+import SessionFooter from "./SessionFooter"
 
 export default function SetSessionView() {
   const flashcards = useRef([])
@@ -64,8 +65,10 @@ export default function SetSessionView() {
 
       {setName &&
         <SessionHeader
-          setName={setName.current} setSize={flashcards.current.length}
-          onGoBack={() => startFade("/")} progress={progress}
+          setName={setName.current}
+          setSize={flashcards.current.length}
+          onGoBack={() => startFade("/")}
+          progress={progress}
         />
       }
 
@@ -98,14 +101,17 @@ export default function SetSessionView() {
           </AnimatePresence>
         </CardStack>
       }
+
+      {showable && showable.length > 0 &&
+        <SessionFooter cardData={flashcards.current[showable[0]]}/>
+      }
     </>
   )
 }
 
 const CardStack = styled(motion.div)`
-  position: absolute;
+  position: relative;
   left: calc(50% - 160px);
-  top: 100px;
   width: 330px;
 
   display: flex;

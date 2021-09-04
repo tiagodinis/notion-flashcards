@@ -20,9 +20,7 @@ export default function Flashcard(props) {
     return `perspective(1000px) translate3d(${x}, ${y}, 0px) rotateZ(${rotateZ}) rotateY(${rotateY}) scale(${scale})`
   }
 
-  function handleScrollDrag() {
-    
-  }
+  console.log(props.cardData)
 
   function handleDragEnd(event, info) {
     setTimeout(() => isDragging.current = false, 1) // (!) Avoid triggering flip
@@ -83,6 +81,11 @@ export default function Flashcard(props) {
           </div>
           </CustomScroller>
         </Content>
+        {/* <Footer>
+          <div>Front</div>
+          <div>8 days</div>
+          <div>Lvl. {props.cardData.lvl}</div>
+        </Footer> */}
       </Side>
       {/* <Side initial={{rotateY: 180}}>
         <Content>
@@ -125,7 +128,7 @@ const Content = styled(motion.div)`
   margin-top: 25px;
   margin-left: 13px;
   width: 266px;
-  height: 360px;
+  height: 370px;
   overflow: hidden;
 
   /* overflow-y: scroll;
@@ -139,7 +142,14 @@ const Content = styled(motion.div)`
 `
 
 const Footer = styled(motion.div)`
+  display: flex;
+  justify-content: center;
+  margin-top: 16px;
+  /* margin: 16px 13px 0px 13px; */
 
+  div {
+    margin: 0px 10px;
+  }
 `
 
 // Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.

@@ -24,6 +24,7 @@ export default function SessionHeader({ setName, setSize, onGoBack, progress }) 
 
       <HeaderDataContainer>
         <SetName>{setName}</SetName>
+        {/* <SetName>Country capitals Country capitals Country capitals au</SetName> */}
         <ProgressContainer>
           <SetSize>{setSize} cards</SetSize>
           <ProgressBar maxWidth={barMaxWidth}>
@@ -41,11 +42,12 @@ export default function SessionHeader({ setName, setSize, onGoBack, progress }) 
 }
 
 const SessionHeaderContainer = styled.div`
-  margin: 25px 15px 0px 15px;
+  margin: 25px 15px 30px 15px;
   font-family: "Rubik", sans-serif;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  border: 1px solid black;
 `
 
 const GoBackArrow = styled(motion.div)`
@@ -59,9 +61,22 @@ const HeaderDataContainer = styled.div`
 `
 
 const SetName = styled.div`
-  font-size: 1.2rem;
+  font-size: 20px;
   font-weight: bold;
   color: #232039;
+
+  max-height: 48px;
+  display: -webkit-box !important;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  word-break: break-word;
+  white-space: normal;
+  overflow: hidden;
+
+  /* white-space: normal;
+  overflow: hidden;
+  text-overflow: ellipsis; */
+  /* border: 1px solid black; */
 `
 
 const ProgressContainer = styled.div`
