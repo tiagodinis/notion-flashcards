@@ -1,21 +1,18 @@
-import { useState } from "react"
-import { motion } from "framer-motion"
 import styled from "styled-components"
 import RepeatSVG from "../svg/RepeatSVG"
 import LevelIndicatorSVG from "../svg/LevelIndicatorSVG"
 import RotateSVG from "../svg/RotateSVG"
 
 export default function SessionFooter(props) {
-
   return (
     <FooterContainer>
       <IconLabelPair>
         <RotateSVG dim={30} color="rgb(158, 158, 167)"/>
-        <div>Front</div>
+        <div>{props.isFlipped ? "Back" : "Front"}</div>
       </IconLabelPair>
       <IconLabelPair>
         <RepeatSVG dim="19" color="rgb(158, 158, 167)"/>
-        <div>8 days</div>
+        <div>{props.cardData.expired_in + (props.cardData.expired_in === 1 ? " day" : " days")}</div>
       </IconLabelPair>
       <IconLabelPair>
         <LevelIndicatorSVG dim="19" color="rgb(158, 158, 167)"/>
@@ -30,7 +27,7 @@ const FooterContainer = styled.div`
 
   position: absolute;
   bottom: 20px;
-  left: calc(50% - 150px);
+  left: calc(50% - 136px);
 
   font-family: "Rubik", sans-serif;
 
@@ -45,6 +42,7 @@ const FooterContainer = styled.div`
 `
 
 const IconLabelPair = styled.div`
+  width: 100px;
   display: flex;
 
   div {

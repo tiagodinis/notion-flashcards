@@ -13,6 +13,7 @@ export default function SetSessionView() {
   const [showable, setShowable] = useState(null)
   const [exitX, setExitX] = useState("100%")
   const [progress, setProgress] = useState(0)
+  const [isFlipped, setIsFlipped] = useState(false)
   const [error, setError] = useState("")
   let { setID } = useParams()
   const startFade = useContext(FadeContext)
@@ -50,6 +51,7 @@ export default function SetSessionView() {
   function setCardResult(isCorrect) {
     flashcards.current[showable[0]].sessionResult = isCorrect
     setShowable(getShowableCardsFromIndex(showable[0]))
+    setIsFlipped(false)
     setProgress(flashcards.current.reduce((acc, f) => acc + (f.sessionResult !== undefined ? 1 : 0), 0) / flashcards.current.length)
     // TODO: If all cards tested, show session report
   }
@@ -69,6 +71,12 @@ export default function SetSessionView() {
           setSize={flashcards.current.length}
           onGoBack={() => startFade("/")}
           progress={progress}
+        />
+      }
+
+      {showable && showable.length > 0 &&
+        <SessionFooter cardData={flashcards.current[showable[0]]}
+          isFlipped={isFlipped}
         />
       }
 
@@ -96,14 +104,11 @@ export default function SetSessionView() {
                 skip={skip} setCardResult={setCardResult}
                 animate={{scale: 1, x: 0, opacity: 1}}
                 drag canFlip
+                isFlipped={isFlipped} setIsFlipped={newFlipState => setIsFlipped(newFlipState)}
               />
             }
           </AnimatePresence>
         </CardStack>
-      }
-
-      {showable && showable.length > 0 &&
-        <SessionFooter cardData={flashcards.current[showable[0]]}/>
       }
     </>
   )

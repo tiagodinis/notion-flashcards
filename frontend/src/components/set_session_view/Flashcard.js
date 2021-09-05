@@ -6,7 +6,7 @@ import CustomScroller from "react-custom-scroller"
 import styles from "../../Example.module.css";
 
 export default function Flashcard(props) {
-  const [isFlipped, setIsFlipped] = useState(false)
+  // const [isFlipped, setIsFlipped] = useState(false)
   const [isDraggingScroller, setIsDraggingScroller] = useState(false)
   const isDragging = useRef(false)
   const x = useMotionValue(0)
@@ -46,7 +46,7 @@ export default function Flashcard(props) {
 
   return (
     <FlashcardContainer
-      onClick={() => {if (props.canFlip && !isDragging.current) setIsFlipped(!isFlipped)}}
+      onClick={() => {if (props.canFlip && !isDragging.current) props.setIsFlipped(!props.isFlipped)}}
       transformTemplate={template}
       dragDirectionLock
       drag={isDraggingScroller ? {} : props.drag}
@@ -57,7 +57,7 @@ export default function Flashcard(props) {
       whileDrag={{cursor: "grabbing"}}
       style={{x: x, y: y, rotateZ: rotateZ, rotateY: 0, scale: 1}}
       initial={props.initial}
-      animate={{...props.animate, rotateY: isFlipped ? 180 : 0}}
+      animate={{...props.animate, rotateY: props.isFlipped ? 180 : 0}}
       exit={{
         x: props.exitX,
         opacity: 0,
