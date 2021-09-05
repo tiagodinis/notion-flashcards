@@ -48,7 +48,7 @@ const SessionHeaderContainer = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border: 1px solid black;
+  ${'' /* border: 1px solid black; */}
 `
 
 const GoBackArrow = styled(motion.div)`

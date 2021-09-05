@@ -1,7 +1,7 @@
 export default function QuestionsMarkSVG({ dim = "16", color = "white" }) {
   return (
     <svg viewBox="0 0 973.1 973.1" width={dim} height={dim} fill={color} role="img">
-      <title>Arrow head icon</title>
+      <title>Question mark icon</title>
       <path d="M502.29,788.199h-47c-33.1,0-60,26.9-60,60v64.9c0,33.1,26.9,60,60,60h47c33.101,0,60-26.9,60-60v-64.9
 		  C562.29,815,535.391,788.199,502.29,788.199z"/>
 	    <path d="M170.89,285.8l86.7,10.8c27.5,3.4,53.6-12.4,63.5-38.3c12.5-32.7,29.9-58.5,52.2-77.3c31.601-26.6,70.9-40,117.9-40

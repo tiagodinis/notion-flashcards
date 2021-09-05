@@ -81,11 +81,6 @@ export default function Flashcard(props) {
           </div>
           </CustomScroller>
         </Content>
-        {/* <Footer>
-          <div>Front</div>
-          <div>8 days</div>
-          <div>Lvl. {props.cardData.lvl}</div>
-        </Footer> */}
       </Side>
       {/* <Side initial={{rotateY: 180}}>
         <Content>
@@ -102,7 +97,7 @@ export default function Flashcard(props) {
 const FlashcardContainer = styled(motion.div)`
   position: absolute;
   width: 310px;
-  height: 420px;
+  height: 380px;
   border-radius: 25px;
   background-color: grey;
   ${'' /* background-color: white; */}
@@ -128,28 +123,8 @@ const Content = styled(motion.div)`
   margin-top: 25px;
   margin-left: 13px;
   width: 266px;
-  height: 370px;
+  height: 330px;
   overflow: hidden;
-
-  /* overflow-y: scroll;
-  scrollbar-color: #676767 transparent;
-  scrollbar-width: thin;
-  scrollbar-gutter: stable;
-
-  &:hover {
-    scrollbar-color: #676767 transparent;
-  } */
-`
-
-const Footer = styled(motion.div)`
-  display: flex;
-  justify-content: center;
-  margin-top: 16px;
-  /* margin: 16px 13px 0px 13px; */
-
-  div {
-    margin: 0px 10px;
-  }
 `
 
 // Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
