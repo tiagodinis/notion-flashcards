@@ -6,13 +6,14 @@ import CustomScroller from "react-custom-scroller"
 import styles from "../../Example.module.css";
 
 export default function Flashcard(props) {
-  // const [isFlipped, setIsFlipped] = useState(false)
   const [isDraggingScroller, setIsDraggingScroller] = useState(false)
   const isDragging = useRef(false)
   const x = useMotionValue(0)
   const y = useMotionValue(0)
-  const rotateZByX = useTransform(x, [-110, 110], props.drag ? [-15, 15] : [0, 0])
-  const rotateZByY = useTransform(y, [-30, 30], props.drag ? [10, -10] : [0, 0])
+  const xLimit = 150
+  const yLimit = 150
+  const rotateZByX = useTransform(x, [-xLimit, xLimit], props.drag ? [-15, 15] : [0, 0])
+  const rotateZByY = useTransform(y, [-yLimit, yLimit], props.drag ? [10, -10] : [0, 0])
   const rotateZ = useTransform([rotateZByX, rotateZByY], arr => arr[0] + arr[1])
   
   // (!) Combine drag and flip rotation transformation sequence (they use different defaults)
@@ -20,7 +21,20 @@ export default function Flashcard(props) {
     return `perspective(1000px) translate3d(${x}, ${y}, 0px) rotateZ(${rotateZ}) rotateY(${rotateY}) scale(${scale})`
   }
 
-  console.log(props.cardData)
+  function handleDragElastic(event, info) {
+    function easedClamp(offset, limit, mValue) {
+      if (offset < -limit) mValue.set(-limit * 0.3)
+      else if (offset > limit) mValue.set(limit * 0.3)
+      else {
+        const p = Math.abs(offset) / limit
+        const multiplier = 0.5 - 0.2 * p
+        mValue.set(offset * multiplier)
+      }
+    }
+
+    if (y.get() === 0) easedClamp(info.offset.x, xLimit, x) // Horizontal movement
+    else if (x.get() === 0) easedClamp(info.offset.y, yLimit, y) // Vertical movement
+  }
 
   function handleDragEnd(event, info) {
     setTimeout(() => isDragging.current = false, 1) // (!) Avoid triggering flip
@@ -52,6 +66,7 @@ export default function Flashcard(props) {
       drag={isDraggingScroller ? {} : props.drag}
       dragConstraints={{left: 0, right: 0, top: 0, bottom: 0}}
       dragTransition={{ bounceStiffness: 600, bounceDamping: 20 }}
+      onDrag={handleDragElastic}
       onDragStart={() => isDragging.current = true}
       onDragEnd={handleDragEnd}
       whileDrag={{cursor: "grabbing"}}
