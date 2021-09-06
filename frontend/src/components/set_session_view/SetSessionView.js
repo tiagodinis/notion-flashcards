@@ -57,8 +57,10 @@ export default function SetSessionView() {
   }
 
   function skip() {
-    if (showable.length > 1)
+    if (showable.length > 1) {
       setShowable(getShowableCardsFromIndex(showable[1]))
+      setIsFlipped(false)
+    }
   }
 
   return (
