@@ -10,8 +10,8 @@ export default function Flashcard(props) {
   const isDragging = useRef(false)
   const x = useMotionValue(0)
   const y = useMotionValue(0)
-  const xLimit = 150
-  const yLimit = 150
+  const xLimit = 102
+  const yLimit = 70
   const rotateZByX = useTransform(x, [-xLimit, xLimit], props.drag ? [-15, 15] : [0, 0])
   const rotateZByY = useTransform(y, [-yLimit, yLimit], props.drag ? [10, -10] : [0, 0])
   const rotateZ = useTransform([rotateZByX, rotateZByY], arr => arr[0] + arr[1])
@@ -23,7 +23,6 @@ export default function Flashcard(props) {
   else if (props.cardData.expired_in < 5)
     cardColor = ["#ffa166", "#fcc19c", "#fae2d3"][props.pos]
   else cardColor = ["#8d7ed3", "#b4abe0", "#ddd9ef"][props.pos]
-  
 
   // (!) Combine drag and flip rotation transformation sequence (they use different defaults)
   function template({ x, y, rotateZ, rotateY, scale }) {
@@ -34,11 +33,6 @@ export default function Flashcard(props) {
     function easedClamp(offset, limit, mValue) {
       if (offset < -limit) mValue.set(-limit * 0.3)
       else if (offset > limit) mValue.set(limit * 0.3)
-      else {
-        const p = Math.abs(offset) / limit
-        const multiplier = 0.5 - 0.2 * p
-        mValue.set(offset * multiplier)
-      }
     }
 
     if (y.get() === 0) easedClamp(info.offset.x, xLimit, x) // Horizontal movement
@@ -67,8 +61,6 @@ export default function Flashcard(props) {
     }
   }
 
-  // console.log(props.pos)
-
   return (
     <FlashcardContainer
       onClick={() => {if (props.canFlip && !isDragging.current) props.setIsFlipped(!props.isFlipped)}}
@@ -76,6 +68,7 @@ export default function Flashcard(props) {
       dragDirectionLock
       drag={isDraggingScroller ? {} : props.drag}
       dragConstraints={{left: 0, right: 0, top: 0, bottom: 0}}
+      dragElastic={0.3}
       dragTransition={{ bounceStiffness: 600, bounceDamping: 20 }}
       onDrag={handleDragElastic}
       onDragStart={() => isDragging.current = true}
@@ -84,7 +77,7 @@ export default function Flashcard(props) {
       style={{x: x, y: y, rotateZ: rotateZ, rotateY: 0, scale: 1}}
       initial={props.initial}
       animate={{...props.animate, rotateY: props.isFlipped ? 180 : 0}}
-      // transition={{duration: 0.4, ease: "backOut"}}
+      transition={{duration: 0.35, ease: "backOut"}}
       exit={{
         x: props.exitX,
         opacity: 0,
@@ -110,24 +103,36 @@ export default function Flashcard(props) {
           </CustomScroller>
         </Content>
       </Side>
-      {/* <Side initial={{rotateY: 180}}>
-        <Content>
-          <CustomScroller className={styles.scroller} innerClassName={styles.content}>
-          {props.cardData.back}
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-          </CustomScroller>
-        </Content>
-      </Side> */}
+      <Side initial={{rotateY: 180}}>
+        {props.isFlipped && // (!) Fixes CustomController scroll ambiguity problem
+          <Content>
+            <CustomScroller className={styles.scroller} innerClassName={styles.content}
+              onMouseDown={() => setIsDraggingScroller(true)}
+              onMouseUp={() => setIsDraggingScroller(false)}
+            >
+            <div onMouseDown={e => e.stopPropagation()}>
+            {props.cardData.back}
+            Ut sem nulla pharetra diam sit amet nisl suscipit. Tortor pretium viverra suspendisse potenti nullam. Phasellus egestas tellus rutrum tellus pellentesque eu tincidunt tortor. Risus nec feugiat in fermentum posuere urna. Nullam eget felis eget nunc. Nibh mauris cursus mattis molestie. Magna eget est lorem ipsum dolor sit amet consectetur. Sit amet commodo nulla facilisi nullam. Diam vulputate ut pharetra sit amet aliquam id diam maecenas. Id leo in vitae turpis massa. Lacus viverra vitae congue eu consequat ac felis donec. Duis at consectetur lorem donec. Pellentesque nec nam aliquam sem. Orci sagittis eu volutpat odio facilisis. Dolor sit amet consectetur adipiscing elit pellentesque habitant morbi tristique.
+            </div>
+            </CustomScroller>
+          </Content>
+        }
+      </Side>
     </FlashcardContainer>
   )
 }
+
+const TestSide = styled(motion.div)`
+  position: absolute;
+  backface-visibility: hidden;
+
+`
 
 const FlashcardContainer = styled(motion.div)`
   position: absolute;
   width: 310px;
   height: 380px;
   border-radius: 25px;
-  ${'' /* background-color: grey; */}
   background-color: ${props => props.color};
 
   font-family: "Rubik", sans-serif;
@@ -139,6 +144,8 @@ const FlashcardContainer = styled(motion.div)`
 
   cursor: pointer;
   user-select: none;
+
+  transform-style: preserve-3d;
 `
 
 const Side = styled(motion.div)`
