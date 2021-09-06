@@ -16,6 +16,15 @@ export default function Flashcard(props) {
   const rotateZByY = useTransform(y, [-yLimit, yLimit], props.drag ? [10, -10] : [0, 0])
   const rotateZ = useTransform([rotateZByX, rotateZByY], arr => arr[0] + arr[1])
   
+  // Compute color
+  let cardColor
+  if (props.cardData.expired_in < 1)
+    cardColor = ["#f7695f", "#f79e97", "#f8d4d1"][props.pos]
+  else if (props.cardData.expired_in < 5)
+    cardColor = ["#ffa166", "#fcc19c", "#fae2d3"][props.pos]
+  else cardColor = ["#8d7ed3", "#b4abe0", "#ddd9ef"][props.pos]
+  
+
   // (!) Combine drag and flip rotation transformation sequence (they use different defaults)
   function template({ x, y, rotateZ, rotateY, scale }) {
     return `perspective(1000px) translate3d(${x}, ${y}, 0px) rotateZ(${rotateZ}) rotateY(${rotateY}) scale(${scale})`
@@ -58,6 +67,8 @@ export default function Flashcard(props) {
     }
   }
 
+  // console.log(props.pos)
+
   return (
     <FlashcardContainer
       onClick={() => {if (props.canFlip && !isDragging.current) props.setIsFlipped(!props.isFlipped)}}
@@ -73,12 +84,14 @@ export default function Flashcard(props) {
       style={{x: x, y: y, rotateZ: rotateZ, rotateY: 0, scale: 1}}
       initial={props.initial}
       animate={{...props.animate, rotateY: props.isFlipped ? 180 : 0}}
+      // transition={{duration: 0.4, ease: "backOut"}}
       exit={{
         x: props.exitX,
         opacity: 0,
         scale: 0.75,
         transition: { duration: 0.2 },
       }}
+      color={cardColor}
     >
       <Side initial={{rotateY: "0deg"}}>
         <Content>
@@ -114,9 +127,8 @@ const FlashcardContainer = styled(motion.div)`
   width: 310px;
   height: 380px;
   border-radius: 25px;
-  background-color: grey;
-  ${'' /* background-color: white; */}
-  ${'' /* box-shadow: 0 0 50px 1px rgba(0,0,0,.2); */}
+  ${'' /* background-color: grey; */}
+  background-color: ${props => props.color};
 
   font-family: "Rubik", sans-serif;
 

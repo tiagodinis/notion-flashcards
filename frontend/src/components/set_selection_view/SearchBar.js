@@ -31,7 +31,7 @@ export default function SearchBar(props) {
       <VerticalDivider/>
       <OutsideAlerter onOutsideClick={() => setOpenSortMenu(false)}>
         <Sorter ref={measureRef}
-          onClick={e => {e.stopPropagation(); setOpenSortMenu(!openSortMenu); console.log("toggle")}}
+          onClick={e => {e.stopPropagation(); setOpenSortMenu(!openSortMenu)}}
         >
           <SortMetric>{props.sortMetric}</SortMetric>
           <SelectArrowContainer initial={{rotate: 0}} animate={{rotate: openSortMenu ? 180 : 0}}>
@@ -105,7 +105,6 @@ const Sorter = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border: 1px solid black;
 `
 
 const SortMetric = styled(motion.div)`

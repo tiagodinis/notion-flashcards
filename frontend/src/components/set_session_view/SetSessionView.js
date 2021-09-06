@@ -86,25 +86,27 @@ export default function SetSessionView() {
         <CardStack>
           <AnimatePresence>
             {showable.length > 2 &&
-              <Flashcard
-                key={showable[2]} cardData={flashcards.current[showable[2]]}
+              <Flashcard key={showable[2]}
+                pos={2} cardData={flashcards.current[showable[2]]}
                 // initial={{scale: 0.9, x: 28, opacity: 0}}
-                animate={{scale: 0.9, x: 28, opacity: 0.25}}
+                // animate={{scale: 0.9, x: 28, opacity: 0.25}}
+                animate={{scale: 0.9, x: 28}}
               />
             }
             {showable.length > 1 &&
-              <Flashcard
-                key={showable[1]} cardData={flashcards.current[showable[1]]}
+              <Flashcard key={showable[1]}
+                pos={1} cardData={flashcards.current[showable[1]]}
                 // initial={{scale: 0.9, x: 24, opacity: 0.25}}
-                animate={{scale: 0.96, x: 12, opacity: 0.5}}
+                // animate={{scale: 0.96, x: 12, opacity: 0.5}}
+                animate={{scale: 0.96, x: 12}}
               />
             }
             {showable.length > 0 &&
-              <Flashcard
-                key={showable[0]} cardData={flashcards.current[showable[0]]}
+              <Flashcard key={showable[0]}
+                pos={0} cardData={flashcards.current[showable[0]]}
                 exitX={exitX} setExitX={setExitX}
                 skip={skip} setCardResult={setCardResult}
-                animate={{scale: 1, x: 0, opacity: 1}}
+                animate={{scale: 1, x: 0}}
                 drag canFlip
                 isFlipped={isFlipped} setIsFlipped={newFlipState => setIsFlipped(newFlipState)}
               />
