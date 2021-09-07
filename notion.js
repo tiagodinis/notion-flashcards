@@ -5,9 +5,10 @@ const notion = new Client({auth: process.env.NOTION_API_KEY})
 let flashcards
 let sets
 updateFromNotion([updateFlashcards(), updateSets()])
+setInterval(() => updateFromNotion([updateFlashcards(), updateSets()]), 1000 * 60 * 60) // Update every hour
 
-function updateFromNotion(updates) {
-  Promise.all(updates)
+async function updateFromNotion(updates) {
+  return Promise.all(updates)
     .then(data => sets.map(s => { // Update sets avg expiration
       const setFlashcards = flashcards.filter(f => f.sets.includes(s.id))
       const expirationSum = setFlashcards.reduce((acc, f) => acc + f.expired_in, 0)
@@ -72,6 +73,17 @@ function getTrimmedSet(set) {
   }
 }
 
+function sendSets(req, res) {
+  res.json(req.query.contains ?
+    sets.filter(s => s.name.includes(req.query.contains))
+    : sets)
+}
+
+async function sendSyncedSets(req, res) {
+  await updateFromNotion([updateFlashcards(), updateSets()])
+  sendSets(req, res)
+}
+
 function sendSetFlashcards(req, res) {
   const setName = sets.filter(s => s.id === req.params.setID)[0].name
   const setFlashcards = flashcards.filter(f => f.sets.includes(req.params.setID))
@@ -80,12 +92,6 @@ function sendSetFlashcards(req, res) {
 
 function sendWildcardSetFlashcards(req, res) {
   res.json(flashcards.slice(0, 3))
-}
-
-function sendSets(req, res) {
-  res.json(req.query.contains ?
-    sets.filter(s => s.name.includes(req.query.contains))
-    : sets)
 }
 
 function updateFlashcardExpirations(req, res) {
@@ -115,7 +121,8 @@ function updateFlashcardExpiration(pageID, lvl, expiredIn) {
 
 module.exports = {
   sendSets,
-  sendWildcardSetFlashcards,
+  sendSyncedSets,
   sendSetFlashcards,
+  sendWildcardSetFlashcards,
   updateFlashcardExpirations
 }

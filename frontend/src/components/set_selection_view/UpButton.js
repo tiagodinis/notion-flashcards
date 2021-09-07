@@ -27,8 +27,8 @@ export default function UpButton() {
 
 const UpButtonContainer = styled(motion.div)`
   position: fixed;
-  right: 320px;
-  bottom: 10px;
+  right: 25px;
+  bottom: 20px;
   padding: 16px;
 
   border-radius: 200px;

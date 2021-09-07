@@ -8,7 +8,8 @@ export default function SessionHeader({ setName, setSize, onGoBack, progress }) 
   const barMaxWidth = 100;
   // (!) Clamp motionValue so it doesn't exceed background bar
   const startingWidth = useMotionValue(0)
-  const width = useTransform(startingWidth, [0, barMaxWidth], [0, barMaxWidth]) 
+  const width = useTransform(startingWidth, [0, barMaxWidth], [0, barMaxWidth])
+  
   useEffect(() => {
     const controls = animate(startingWidth, progress * barMaxWidth, {
       type: "spring",
@@ -25,8 +26,7 @@ export default function SessionHeader({ setName, setSize, onGoBack, progress }) 
       </GoBackArrow>
 
       <HeaderDataContainer>
-        {/* <SetName>{setName}</SetName> */}
-        <SetName>Country</SetName>
+        <SetName>{setName}</SetName>
         <ProgressContainer>
           <SetSize>{setSize} cards</SetSize>
           <ProgressBar maxWidth={barMaxWidth}>
@@ -44,13 +44,13 @@ export default function SessionHeader({ setName, setSize, onGoBack, progress }) 
 }
 
 const SessionHeaderContainer = styled.div`
-/* position: absolute; */
-  margin: 25px 15px 30px 15px;
+  ${'' /* margin: 25px 15px 30px 15px; */}
+  height: 100px;
+  margin: 0px 15px;
   font-family: "Rubik", sans-serif;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border: 1px solid black;
 `
 
 const GoBackArrow = styled(motion.div)`
