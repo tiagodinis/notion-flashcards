@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useContext } from "react"
-import { motion } from "framer-motion"
+import { motion, useAnimation } from "framer-motion"
 import { FadeContext } from "../utilities/FadeContainer"
 import { AnimatePresence } from "framer-motion"
 import styled from "styled-components"
@@ -10,16 +10,27 @@ import RefreshCircleSVG from "../svg/RefreshCircleSVG"
 
 export default function SetSelectionView() {
   const sets = useRef([])
-  const [refreshing, setRefreshing] = useState(false)
+  // const [refreshing, setRefreshing] = useState(false)
+  const refreshing = useRef(false)
   const [visibleSets, setVisibleSets] = useState([])
   const [searchStr, setSearchStr] = useState("")
   const [sortMetric, setSortMetric] = useState("A-Z")
   const [error, setError] = useState("")
   const startFade = useContext(FadeContext)
+  const controls = useAnimation()
+
+  const sequence = async () => {
+    await controls.start({opacity: 1})
+    while (refreshing.current) {
+      await controls.start({rotate: 180, transition: {duration: 0.5, ease: "easeInOut"}})
+      controls.set({rotate: 0})
+    }
+    controls.start({opacity: 0})
+  }
 
   function refresh() {
-    console.log("wee")
-    setRefreshing(true)
+    refreshing.current = true
+    sequence()
     fetch("/api/syncedSets")
       .then(res => {
         if (!res.ok) throw Error("Could not fetch data for that resource")
@@ -28,7 +39,7 @@ export default function SetSelectionView() {
       .then(data => {
         sets.current = data
         filterAndSort()
-        setRefreshing(false)
+        refreshing.current = false
       })
       .catch(err => setError(err.message))
   }
@@ -67,15 +78,6 @@ export default function SetSelectionView() {
     <>
       {error && <div>{error}</div>}
 
-      <RefreshCircle
-        initial={{rotate: 0}}
-        animate={{rotate: 360}}
-        transition={{repeat: refreshing ? Infinity : 1, duration: 1, ease: "easeInOut"}}
-        onClick={refresh}
-      >
-        <RefreshCircleSVG dim="32" color="rgb(158, 158, 167)"/>
-      </RefreshCircle>
-
       <SearchBar
         searchStr={searchStr}
         setSearchStr={newStr => setSearchStr(newStr)}
@@ -83,6 +85,15 @@ export default function SetSelectionView() {
         setSortMetric={newSortMetric => setSortMetric(newSortMetric)}
         sortMetricList={Object.keys(sortMap)}
       />
+
+      <NotionOptions>
+        <div onClick={refresh}>Refresh server data</div>
+        <div>Reset demo</div>
+      </NotionOptions>
+
+      <RefreshCircle initial={{opacity: 1}} animate={controls}>
+        <RefreshCircleSVG dim="16" color="rgb(158, 158, 167)"/>
+      </RefreshCircle>
 
       <SetGrid>
         <AnimatePresence>
@@ -99,22 +110,45 @@ export default function SetSelectionView() {
   )
 }
 
-const RefreshCircle = styled(motion.div)`
-  border: 1px solid black;
-  padding: 10px;
+const NotionOptions = styled.div`
   width: fit-content;
-  border-radius: 30px;
-  cursor: pointer;
+  margin: 10px auto 0px auto;
+  margin-top: 10px;
 
   display: flex;
   justify-content: center;
-  align-content: center; 
+  font-size: 12px;
+  font-family: "Rubik", sans-serif;
+  color: hsl(240, 5%, 50%);
+
+  div:first-child {
+    margin-right: 20px;
+  }
+
+  div {
+    cursor: pointer;
+  }
+
+  div:hover {
+    color: hsl(240, 5%, 30%);
+  }
+`
+
+const RefreshCircle = styled(motion.div)`
+  position: relative;
+  bottom: 14px;
+  left: 440px;
+  ${'' /* margin-top: 10px; */}
+  ${'' /* left: calc(50% - 12px); */}
+
+  width: fit-content;
+  display: flex;
 `
 
 const SetGrid = styled.div`
   --item-width: 350px;
   --grid-gap: 30px;
-  margin: 60px auto;
+  margin: 50px auto 60px auto;
   width: calc(var(--item-width) * 3 + var(--grid-gap) * 2);
   /* width: calc(var(--item-width) * 1 + var(--grid-gap) * 0); */
   display: grid;
