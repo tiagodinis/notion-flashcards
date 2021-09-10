@@ -10,27 +10,15 @@ import RefreshCircleSVG from "../svg/RefreshCircleSVG"
 
 export default function SetSelectionView() {
   const sets = useRef([])
-  // const [refreshing, setRefreshing] = useState(false)
-  const refreshing = useRef(false)
+  const [refreshing, setRefreshing] = useState(false)
   const [visibleSets, setVisibleSets] = useState([])
   const [searchStr, setSearchStr] = useState("")
   const [sortMetric, setSortMetric] = useState("A-Z")
   const [error, setError] = useState("")
   const startFade = useContext(FadeContext)
-  const controls = useAnimation()
-
-  const sequence = async () => {
-    await controls.start({opacity: 1})
-    while (refreshing.current) {
-      await controls.start({rotate: 180, transition: {duration: 0.5, ease: "easeInOut"}})
-      controls.set({rotate: 0})
-    }
-    controls.start({opacity: 0})
-  }
 
   function refresh() {
-    refreshing.current = true
-    sequence()
+    setRefreshing(true)
     fetch("/api/syncedSets")
       .then(res => {
         if (!res.ok) throw Error("Could not fetch data for that resource")
@@ -39,7 +27,7 @@ export default function SetSelectionView() {
       .then(data => {
         sets.current = data
         filterAndSort()
-        refreshing.current = false
+        setRefreshing(false)
       })
       .catch(err => setError(err.message))
   }
@@ -84,6 +72,7 @@ export default function SetSelectionView() {
         sortMetric={sortMetric}
         setSortMetric={newSortMetric => setSortMetric(newSortMetric)}
         sortMetricList={Object.keys(sortMap)}
+        refreshing={refreshing}
       />
 
       <NotionOptions>
@@ -91,9 +80,9 @@ export default function SetSelectionView() {
         <div>Reset demo</div>
       </NotionOptions>
 
-      <RefreshCircle initial={{opacity: 1}} animate={controls}>
+      {/* <RefreshCircle initial={{opacity: 1}} animate={controls}>
         <RefreshCircleSVG dim="16" color="rgb(158, 158, 167)"/>
-      </RefreshCircle>
+      </RefreshCircle> */}
 
       <SetGrid>
         <AnimatePresence>
@@ -134,16 +123,16 @@ const NotionOptions = styled.div`
   }
 `
 
-const RefreshCircle = styled(motion.div)`
-  position: relative;
-  bottom: 14px;
-  left: 440px;
-  ${'' /* margin-top: 10px; */}
-  ${'' /* left: calc(50% - 12px); */}
+// const RefreshCircle = styled(motion.div)`
+//   position: relative;
+//   bottom: 14px;
+//   left: 440px;
+//   ${'' /* margin-top: 10px; */}
+//   ${'' /* left: calc(50% - 12px); */}
 
-  width: fit-content;
-  display: flex;
-`
+//   width: fit-content;
+//   display: flex;
+// `
 
 const SetGrid = styled.div`
   --item-width: 350px;
