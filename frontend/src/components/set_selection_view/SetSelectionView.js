@@ -75,10 +75,10 @@ export default function SetSelectionView() {
         refreshing={refreshing}
       />
 
-      {/* <NotionOptions>
+      <NotionOptions>
         <div onClick={refresh}>Refresh server data</div>
         <div>Reset demo</div>
-      </NotionOptions> */}
+      </NotionOptions>
 
       {/* <SetGrid>
         <AnimatePresence>
@@ -96,15 +96,23 @@ export default function SetSelectionView() {
 }
 
 const NotionOptions = styled.div`
+  @media (min-width: 470px) {
+    margin: 6px auto 0px auto;
+  }
+
+  @media (min-width: 768px) {
+    margin: 10px auto 0px auto;
+    font-size: 12px;
+  }
+
   width: fit-content;
-  margin: 10px auto 0px auto;
-  margin-top: 10px;
+  margin: 6px auto 0px calc(-294px + 95.65%);
 
   display: flex;
   justify-content: center;
-  font-size: 12px;
+  font-size: 10px;
   font-family: "Rubik", sans-serif;
-  color: hsl(240, 5%, 50%);
+  color: #797986;
 
   div:first-child {
     margin-right: 20px;
@@ -115,7 +123,7 @@ const NotionOptions = styled.div`
   }
 
   div:hover {
-    color: hsl(240, 5%, 30%);
+    color: #494950;
   }
 `
 

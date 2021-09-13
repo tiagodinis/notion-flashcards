@@ -144,8 +144,12 @@ const SearchBarContainer = styled.div`
 `
 
 const RefreshCircle = styled(motion.div)`
+  @media (min-width: 768px) {
+    transform-origin: 32px;
+  }
+
   position: absolute;
-  transform-origin: 32px;
+  transform-origin: 22px;
   width: fit-content;
   display: flex;
 `
