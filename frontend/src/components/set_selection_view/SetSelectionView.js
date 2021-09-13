@@ -90,7 +90,19 @@ export default function SetSelectionView() {
         </AnimatePresence>
       </SetGrid> */}
 
-      <UpButton/>
+      <SetGrid>
+        <Set key={"1"} set={{id: 1, avg_expiration: 20, flashcards: [1, 2, 3], name: "Europe capitals"}} gridIndex={0}
+          onSetSelected={() => startFade("flashcards/" + "1")}
+        />
+        {/* <Set key={"2"} set={{id: 1, avg_expiration: 20, flashcards: [1, 2, 3, 1, 1, 1, 1, 1, 1, 1, 1], name: "asd"}} gridIndex={0}
+          onSetSelected={() => startFade("flashcards/" + "1")}
+        />
+        <Set key={"3"} set={{id: 1, avg_expiration: 20, flashcards: [1, 2, 3], name: "asd"}} gridIndex={0}
+          onSetSelected={() => startFade("flashcards/" + "1")}
+        /> */}
+      </SetGrid>
+
+      {/* <UpButton/> */}
     </>
   )
 }
@@ -128,12 +140,17 @@ const NotionOptions = styled.div`
 `
 
 const SetGrid = styled.div`
-  --item-width: 350px;
+  @media (min-width: 768px) {
+    margin: 50px auto 60px auto;
+    --item-width: 350px;
+  }
+
+  --item-width: 300px;
   --grid-gap: 30px;
-  margin: 50px auto 60px auto;
+  margin: 25px auto 60px auto;
   width: calc(var(--item-width) * 3 + var(--grid-gap) * 2);
-  ${'' /* width: calc(var(--item-width) * 2 + var(--grid-gap) * 1);
-  width: calc(var(--item-width) * 1 + var(--grid-gap) * 0); */}
+  width: calc(var(--item-width) * 2 + var(--grid-gap) * 1);
+  width: calc(var(--item-width) * 1 + var(--grid-gap) * 0);
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(var(--item-width), 1fr));
   gap: var(--grid-gap);

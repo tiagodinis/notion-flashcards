@@ -39,10 +39,16 @@ export default function Set({set, gridIndex, onSetSelected}) {
 }
 
 const OuterSet = styled(motion.div)`
-  width: 350px;
-  height: 200px;
+  @media (min-width: 768px) {
+    width: 350px;
+    height: 200px;
+    border-radius: 20px;
+  }
 
-  border-radius: 20px;
+  width: 300px;
+  height: 150px;
+
+  border-radius: 15px;
   /* border: 1px solid rgba(0, 0, 0, .1); */
   box-shadow: 0 0 50px 1px rgba(0, 0, 0, .2);
 
@@ -54,16 +60,24 @@ const OuterSet = styled(motion.div)`
 `
 
 const InnerSet = styled(motion.div)`
+  @media (min-width: 768px) {
+    bottom: 2px;
+    width: 290px;
+    height: 158px;
+  }
+
+  ${'' /* border: 1px solid black; */}
+
   position: relative;
-  bottom: 2px;
-  width: 290px;
-  height: 158px;
+  width: 275px;
+  height: 130px;
   margin: auto;
   display: flex;
   flex-direction: column;
 `
 
 const SetDetails = styled(motion.div)`
+font-size: 16px;
   margin: 0px 2px;
   display: flex;
   justify-content: space-between;
@@ -79,6 +93,8 @@ const ExpirationContainer = styled(motion.div)`
 `
 
 const SetTitle = styled(motion.div)`
+  ${'' /* border: 1px solid black; */}
+
   margin: auto;
   font-size: 2.3rem;
   text-align: center;

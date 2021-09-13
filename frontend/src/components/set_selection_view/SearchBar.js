@@ -164,7 +164,7 @@ const VerticalDivider = styled.div`
     height: 32px;
   }
 
-  height: 24px;
+  height: 20px;
   border-left: 2px solid #e7e7e9;
 `
 
