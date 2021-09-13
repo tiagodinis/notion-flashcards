@@ -75,16 +75,12 @@ export default function SetSelectionView() {
         refreshing={refreshing}
       />
 
-      <NotionOptions>
+      {/* <NotionOptions>
         <div onClick={refresh}>Refresh server data</div>
         <div>Reset demo</div>
-      </NotionOptions>
+      </NotionOptions> */}
 
-      {/* <RefreshCircle initial={{opacity: 1}} animate={controls}>
-        <RefreshCircleSVG dim="16" color="rgb(158, 158, 167)"/>
-      </RefreshCircle> */}
-
-      <SetGrid>
+      {/* <SetGrid>
         <AnimatePresence>
           {visibleSets.map((s, i) =>
             <Set key={s.id} set={s} gridIndex={i}
@@ -92,7 +88,7 @@ export default function SetSelectionView() {
             />
           )}
         </AnimatePresence>
-      </SetGrid>
+      </SetGrid> */}
 
       <UpButton/>
     </>
@@ -123,23 +119,13 @@ const NotionOptions = styled.div`
   }
 `
 
-// const RefreshCircle = styled(motion.div)`
-//   position: relative;
-//   bottom: 14px;
-//   left: 440px;
-//   ${'' /* margin-top: 10px; */}
-//   ${'' /* left: calc(50% - 12px); */}
-
-//   width: fit-content;
-//   display: flex;
-// `
-
 const SetGrid = styled.div`
   --item-width: 350px;
   --grid-gap: 30px;
   margin: 50px auto 60px auto;
   width: calc(var(--item-width) * 3 + var(--grid-gap) * 2);
-  /* width: calc(var(--item-width) * 1 + var(--grid-gap) * 0); */
+  ${'' /* width: calc(var(--item-width) * 2 + var(--grid-gap) * 1);
+  width: calc(var(--item-width) * 1 + var(--grid-gap) * 0); */}
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(var(--item-width), 1fr));
   gap: var(--grid-gap);

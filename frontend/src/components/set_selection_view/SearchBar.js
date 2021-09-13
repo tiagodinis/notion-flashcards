@@ -45,10 +45,10 @@ export default function SearchBar(props) {
   return (
     <SearchBarContainer onClick={() => inputEl.current.focus()}>
       <RefreshCircle initial={{opacity: 0}} animate={circleControls}>
-        <RefreshCircleSVG color="rgb(158, 158, 167)"/>
+        <RefreshCircleSVG color="#A79E9E"/>
       </RefreshCircle>
       <MagnifyingGlass animate={magnifyingControls}>
-        <MagnifyingGlassSVG color="rgb(158, 158, 167)"/>
+        <MagnifyingGlassSVG color="#A79E9E"/>
       </MagnifyingGlass>
 
       <input ref={inputEl} type="text" value={props.searchStr} placeholder="Search..."
@@ -61,7 +61,7 @@ export default function SearchBar(props) {
         >
           <SortMetric>{props.sortMetric}</SortMetric>
           <SelectArrowContainer initial={{rotate: 0}} animate={{rotate: openSortMenu ? 180 : 0}}>
-            <ArrowHead1SVG dim="14" color="#242337"/>
+            <ArrowHead1SVG dim="11" color="#242337"/>
           </SelectArrowContainer>
           <AnimatePresence>
             {openSortMenu &&
@@ -81,6 +81,68 @@ export default function SearchBar(props) {
     </SearchBarContainer>)
 }
 
+const SearchBarContainer = styled.div`
+  @media (min-width: 768px) {
+    max-width: 500px;
+    margin: 50px auto 0px auto;
+
+    border-radius: 10px;
+  }
+
+  width: calc(100% - 20px);
+  max-width: 450px;
+  margin: 10px auto 0 auto;
+
+  border: 1px solid rgba(0, 0, 0, .1);
+  border-radius: 7.5px;
+  background-color: white;
+  
+  display: flex;
+  align-items: center;
+
+  &:hover {
+    @media (min-width: 768px) {
+      box-shadow: 0px 0px 8px rgba(0, 0, 0, .1);
+    }
+
+    cursor: text;
+    border-color: transparent;
+    box-shadow: 0px 0px 6px rgba(0, 0, 0, .1);
+  }
+
+  svg {
+    @media (min-width: 768px) {
+      margin: 20px 0px 20px 24px;
+    }
+
+    margin: 10px 0px 10px 14px;
+  }
+
+  input {
+    @media (min-width: 768px) {
+      bottom: 1px;
+      margin-left: 20px;
+      margin-right: 18px;
+      font-size: 16px;
+    }
+
+    position: relative;
+    bottom: 0px;
+    margin-left: 10px;
+    margin-right: 13px;
+    min-width: 0px; /* (!) Can be collapsed, sorter options more important*/
+    flex-grow: 1;
+    border: 0;
+    outline: none;
+    font-size: 12px;
+    color: #242337;
+  }
+
+  input::placeholder {
+    color: #797986;
+  }
+`
+
 const RefreshCircle = styled(motion.div)`
   position: absolute;
   transform-origin: 32px;
@@ -93,52 +155,26 @@ const MagnifyingGlass = styled(motion.div)`
   display: flex;
 `
 
-const SearchBarContainer = styled.div`
-  width: 500px;
-  margin: 50px auto 0px auto;
-
-  border: 1px solid rgba(0, 0, 0, .1);
-  border-radius: 10px;
-  background-color: white;
-  
-  &:hover {
-    cursor: text;
-    border-color: transparent;
-    box-shadow: 0px 0px 8px rgba(0, 0, 0, .1);
-  }
-
-  display: flex;
-  align-items: center;
-
-  svg {
-    margin: 20px 0px 20px 24px;
-  }
-
-  input {
-    position: relative;
-    bottom: 1px;
-    margin-left: 20px;
-    margin-right: 18px;
-    flex-grow: 1;
-    border: 0;
-    outline: none;
-    font-size: 1rem;
-    color: #242337;
-  }
-
-  input::placeholder {
-    color: hsl(240, 5%, 50%);
-  }
-`
-
 const VerticalDivider = styled.div`
-  height: 32px;
+  @media (min-width: 768px) {
+    height: 32px;
+  }
+
+  height: 24px;
   border-left: 2px solid #e7e7e9;
 `
 
 const Sorter = styled.div`
-  height: 56px;
+  @media (min-width: 768px) {
+    height: 56px;
+    font-size: 16px;
+  }
+
+  height: 36px;
+  padding-left: 20px;
   cursor: pointer;
+
+  font-size: 14px;
 
   display: flex;
   align-items: center;
@@ -146,16 +182,20 @@ const Sorter = styled.div`
 `
 
 const SortMetric = styled(motion.div)`
-  margin-left: 20px;
   color: #242337;
   font-family: "Rubik", sans-serif;
   user-select: none;
 `
 
 const SelectArrowContainer = styled(motion.div)`
-  margin: 0px 15px 0px 10px;
-  width: 14px;
+  @media (min-width: 768px) {
+    height: 18px;
+    margin: 0px 17px 0px 12px;
+  }
+
+  width: 11px;
   height: 14px;
+  margin: 0px 15px 0px 10px;
 
   svg {
     margin: 0px;
@@ -181,7 +221,7 @@ const SortMenu = styled(motion.div)`
   }
 
   div:hover {
-    background-color: rgb(231, 231, 233);
+    background-color: #E7E9E7;
   }
 
   div:first-child {
