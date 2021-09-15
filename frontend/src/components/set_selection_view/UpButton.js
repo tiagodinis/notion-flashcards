@@ -19,23 +19,29 @@ export default function UpButton() {
           initial={{opacity: 0}} animate={{opacity: 1}} exit={{opacity: 0}}
           onClick={() => window.scrollTo({top: 0, behavior: "smooth"})}
         >
-          <ArrowHead2SVG dim="32"/>
+          <ArrowHead2SVG dim="24" color="rgba(255, 255, 255, 0.75)"/>
         </UpButtonContainer>
       }
     </AnimatePresence>)
 }
 
 const UpButtonContainer = styled(motion.div)`
+  @media (min-width: 1140px) {
+    right: 25px;
+    bottom: 20px;
+    padding: 16px;
+  }
+
   position: fixed;
-  right: 25px;
-  bottom: 20px;
-  padding: 16px;
+  right: 15px;
+  bottom: 10px;
+  padding: 10px;
 
   border-radius: 200px;
-  background-color: rgba(150, 150, 150, 0.25);
+  background-color: rgba(120, 120, 120, 0.5);
 
   &:hover{
-    background-color: rgba(150, 150, 150, 0.35);
+    background-color: rgba(120, 120, 120, 0.85);
     cursor: pointer;
   }
 `

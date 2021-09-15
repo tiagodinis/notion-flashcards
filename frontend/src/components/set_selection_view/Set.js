@@ -39,7 +39,7 @@ export default function Set({set, gridIndex, onSetSelected}) {
 }
 
 const OuterSet = styled(motion.div)`
-  @media (min-width: 768px) {
+  @media (min-width: 1140px) {
     width: 350px;
     height: 200px;
     border-radius: 20px;
@@ -49,7 +49,6 @@ const OuterSet = styled(motion.div)`
   height: 150px;
 
   border-radius: 15px;
-  /* border: 1px solid rgba(0, 0, 0, .1); */
   box-shadow: 0 0 50px 1px rgba(0, 0, 0, .2);
 
   cursor: pointer;
@@ -60,16 +59,13 @@ const OuterSet = styled(motion.div)`
 `
 
 const InnerSet = styled(motion.div)`
-  @media (min-width: 768px) {
-    bottom: 2px;
+  @media (min-width: 1140px) {
     width: 290px;
     height: 158px;
   }
 
-  ${'' /* border: 1px solid black; */}
-
   position: relative;
-  width: 275px;
+  width: 277px;
   height: 130px;
   margin: auto;
   display: flex;
@@ -77,7 +73,11 @@ const InnerSet = styled(motion.div)`
 `
 
 const SetDetails = styled(motion.div)`
-font-size: 16px;
+  @media (min-width: 1140px) {
+    font-size: 16px;
+  }
+
+  font-size: 14px;
   margin: 0px 2px;
   display: flex;
   justify-content: space-between;
@@ -93,10 +93,14 @@ const ExpirationContainer = styled(motion.div)`
 `
 
 const SetTitle = styled(motion.div)`
-  ${'' /* border: 1px solid black; */}
+  @media (min-width: 1140px) {
+    font-size: 37px;
+  }
 
+  position: relative;
+  bottom: 1px;
   margin: auto;
-  font-size: 2.3rem;
+  font-size: 28px;
   text-align: center;
 
   display: -webkit-box !important;

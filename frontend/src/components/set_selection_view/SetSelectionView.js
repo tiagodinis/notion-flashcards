@@ -80,7 +80,7 @@ export default function SetSelectionView() {
         <div>Reset demo</div>
       </NotionOptions>
 
-      {/* <SetGrid>
+      <SetGrid>
         <AnimatePresence>
           {visibleSets.map((s, i) =>
             <Set key={s.id} set={s} gridIndex={i}
@@ -88,21 +88,9 @@ export default function SetSelectionView() {
             />
           )}
         </AnimatePresence>
-      </SetGrid> */}
-
-      <SetGrid>
-        <Set key={"1"} set={{id: 1, avg_expiration: 20, flashcards: [1, 2, 3], name: "Europe capitals"}} gridIndex={0}
-          onSetSelected={() => startFade("flashcards/" + "1")}
-        />
-        {/* <Set key={"2"} set={{id: 1, avg_expiration: 20, flashcards: [1, 2, 3, 1, 1, 1, 1, 1, 1, 1, 1], name: "asd"}} gridIndex={0}
-          onSetSelected={() => startFade("flashcards/" + "1")}
-        />
-        <Set key={"3"} set={{id: 1, avg_expiration: 20, flashcards: [1, 2, 3], name: "asd"}} gridIndex={0}
-          onSetSelected={() => startFade("flashcards/" + "1")}
-        /> */}
       </SetGrid>
 
-      {/* <UpButton/> */}
+      <UpButton/>
     </>
   )
 }
@@ -112,7 +100,7 @@ const NotionOptions = styled.div`
     margin: 6px auto 0px auto;
   }
 
-  @media (min-width: 768px) {
+  @media (min-width: 940px) {
     margin: 10px auto 0px auto;
     font-size: 12px;
   }
@@ -140,17 +128,24 @@ const NotionOptions = styled.div`
 `
 
 const SetGrid = styled.div`
-  @media (min-width: 768px) {
+  @media (min-width: 630px) {
+    width: calc(var(--item-width) * 2 + var(--grid-gap) * 1);
+  }
+
+  @media (min-width: 940px) {
     margin: 50px auto 60px auto;
+    width: calc(var(--item-width) * 3 + var(--grid-gap) * 2);
+  }
+
+  @media (min-width: 1140px) {
     --item-width: 350px;
+    --grid-gap: 30px;
   }
 
   --item-width: 300px;
-  --grid-gap: 30px;
-  margin: 25px auto 60px auto;
-  width: calc(var(--item-width) * 3 + var(--grid-gap) * 2);
-  width: calc(var(--item-width) * 2 + var(--grid-gap) * 1);
-  width: calc(var(--item-width) * 1 + var(--grid-gap) * 0);
+  --grid-gap: 10px;
+  margin: 25px auto 30px auto;
+  width: calc(var(--item-width) * 1);
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(var(--item-width), 1fr));
   gap: var(--grid-gap);

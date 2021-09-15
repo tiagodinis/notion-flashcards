@@ -82,7 +82,7 @@ export default function SearchBar(props) {
 }
 
 const SearchBarContainer = styled.div`
-  @media (min-width: 768px) {
+  @media (min-width: 940px) {
     max-width: 500px;
     margin: 50px auto 0px auto;
 
@@ -101,7 +101,7 @@ const SearchBarContainer = styled.div`
   align-items: center;
 
   &:hover {
-    @media (min-width: 768px) {
+    @media (min-width: 940px) {
       box-shadow: 0px 0px 8px rgba(0, 0, 0, .1);
     }
 
@@ -111,7 +111,7 @@ const SearchBarContainer = styled.div`
   }
 
   svg {
-    @media (min-width: 768px) {
+    @media (min-width: 940px) {
       margin: 20px 0px 20px 24px;
     }
 
@@ -119,7 +119,7 @@ const SearchBarContainer = styled.div`
   }
 
   input {
-    @media (min-width: 768px) {
+    @media (min-width: 940px) {
       bottom: 1px;
       margin-left: 20px;
       margin-right: 18px;
@@ -144,7 +144,7 @@ const SearchBarContainer = styled.div`
 `
 
 const RefreshCircle = styled(motion.div)`
-  @media (min-width: 768px) {
+  @media (min-width: 940px) {
     transform-origin: 32px;
   }
 
@@ -160,7 +160,7 @@ const MagnifyingGlass = styled(motion.div)`
 `
 
 const VerticalDivider = styled.div`
-  @media (min-width: 768px) {
+  @media (min-width: 940px) {
     height: 32px;
   }
 
@@ -169,7 +169,7 @@ const VerticalDivider = styled.div`
 `
 
 const Sorter = styled.div`
-  @media (min-width: 768px) {
+  @media (min-width: 940px) {
     height: 56px;
     font-size: 16px;
   }
@@ -192,7 +192,7 @@ const SortMetric = styled(motion.div)`
 `
 
 const SelectArrowContainer = styled(motion.div)`
-  @media (min-width: 768px) {
+  @media (min-width: 940px) {
     height: 18px;
     margin: 0px 17px 0px 12px;
   }
