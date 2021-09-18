@@ -1,11 +1,12 @@
 import { useState, useEffect, useRef, useContext } from "react"
 import { useParams } from "react-router-dom"
 import { FadeContext } from "../utilities/FadeContainer"
-import { AnimatePresence, motion } from "framer-motion"
+import { motion, AnimatePresence } from "framer-motion"
 import styled from "styled-components"
 import SessionHeader from "./SessionHeader"
 import Flashcard from "./Flashcard"
 import SessionFooter from "./SessionFooter"
+import SessionReport from "./SessionReport"
 
 export default function SetSessionView() {
   const flashcards = useRef([])
@@ -14,6 +15,7 @@ export default function SetSessionView() {
   const [exitX, setExitX] = useState("100%")
   const [progress, setProgress] = useState(0)
   const [isFlipped, setIsFlipped] = useState(false)
+  const [resultModalOpen, setResultModalOpen] = useState(false)
   const [error, setError] = useState("")
   let { setID } = useParams()
   const startFade = useContext(FadeContext)
@@ -52,8 +54,11 @@ export default function SetSessionView() {
     flashcards.current[showable[0]].sessionResult = isCorrect
     setShowable(getShowableCardsFromIndex(showable[0]))
     setIsFlipped(false)
-    setProgress(flashcards.current.reduce((acc, f) => acc + (f.sessionResult !== undefined ? 1 : 0), 0) / flashcards.current.length)
-    // TODO: If all cards tested, show session report
+    const isAnswered = (acc, f) => acc + (f.sessionResult === undefined ? 0 : 1)
+    const newProgress = flashcards.current.reduce(isAnswered, 0) / flashcards.current.length
+    setProgress(newProgress)
+    // if (newProgress === 1) setResultModalOpen(true)
+    setResultModalOpen(true)
   }
 
   function skip() {
@@ -61,6 +66,13 @@ export default function SetSessionView() {
       setShowable(getShowableCardsFromIndex(showable[1]))
       setIsFlipped(false)
     }
+  }
+
+  function redo() {
+    flashcards.current.map(f => delete f.sessionResult)
+    setShowable(getShowableCardsFromIndex(0))
+    setProgress(0)
+    setResultModalOpen(false)
   }
 
   return (
@@ -114,14 +126,20 @@ export default function SetSessionView() {
           </AnimatePresence>
         </CardStack>
       }
+
+      <AnimatePresence
+        initial={false}
+      >
+        {resultModalOpen && <SessionReport redo={redo}/>}
+      </AnimatePresence>
     </>
   )
 }
 
 const CardStack = styled(motion.div)`
   position: relative;
-  left: calc(50% - 160px);
-  width: 330px;
+  left: calc(50% - 150px);
+  width: 310px;
 
   display: flex;
 `

@@ -23,21 +23,27 @@ export default function SessionFooter(props) {
 }
 
 const FooterContainer = styled.div`
-  width: 300px;
+  width: 260px;
 
   position: absolute;
   bottom: 20px;
-  left: calc(50% - 136px);
+  left: calc(50% - 126px);
 
   font-family: "Rubik", sans-serif;
 
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
 
   div:first-child > svg {
     position: relative;
     bottom: 5px;
     margin-bottom: -19px;
+  }
+
+  div:nth-child(3) {
+    position: relative;
+    left: -12px;
+    width: 70px;
   }
 `
 

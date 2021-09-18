@@ -17,12 +17,11 @@ export default function Flashcard(props) {
   const rotateZ = useTransform([rotateZByX, rotateZByY], arr => arr[0] + arr[1])
   
   // Compute color
-  let cardColor
+  let cardColor = ["#8d7ed3", "#b4abe0", "#ddd9ef"][props.pos]
   if (props.cardData.expired_in < 1)
     cardColor = ["#f7695f", "#f79e97", "#f8d4d1"][props.pos]
   else if (props.cardData.expired_in < 5)
     cardColor = ["#ffa166", "#fcc19c", "#fae2d3"][props.pos]
-  else cardColor = ["#8d7ed3", "#b4abe0", "#ddd9ef"][props.pos]
 
   // (!) Combine drag and flip rotation transformation sequence (they use different defaults)
   function template({ x, y, rotateZ, rotateY, scale }) {
@@ -124,8 +123,8 @@ export default function Flashcard(props) {
 
 const FlashcardContainer = styled(motion.div)`
   position: absolute;
-  width: 310px;
-  height: 380px;
+  width: 290px;
+  height: 340px;
   border-radius: 25px;
   background-color: ${props => props.color};
 
@@ -150,8 +149,8 @@ const Side = styled(motion.div)`
 const Content = styled(motion.div)`
   margin-top: 25px;
   margin-left: 13px;
-  width: 266px;
-  height: 330px;
+  width: 246px;
+  height: 290px;
   overflow: hidden;
 `
 

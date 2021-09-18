@@ -1,33 +1,41 @@
 import { useHistory } from "react-router-dom"
 import styled from "styled-components"
+import { motion } from "framer-motion"
 
-const Overlay = styled.div`
+const Overlay = styled(motion.div)`
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, .7);
-  /* z-index: 1000; */
+  background: #000000e1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `
 
-const Frame = styled.div`
-  position: fixed;
-  top: 50%;
+const Frame = styled(motion.div)`
+  position: absolute;
+  ${'' /* position: fixed; */}
+  width: clamp(50%, 500px, 90%);
+  height: min(50%, 300px);
+  margin: auto;
+  ${'' /* top: 50%;
   left: 50%;
   width: 500px;
   height: 500px;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%); */}
   background-color: #FFF;
   z-index: 1000;
 `
 
-export default function SessionReport({setID, flashcards, open}) {
+export default function SessionReport({setID, flashcards, redo}) {
   let history = useHistory()
 
-  if (!open) return null
-
   function handleSubmit() {
+    history.push("/")
+    return null
+
     const updatedFlashcardExpirations = flashcards.map(f => {
       let currentLvlMaxExpiration = 2 ** f.lvl
       let remainingPercentage = f.expired_in / currentLvlMaxExpiration
@@ -67,19 +75,57 @@ export default function SessionReport({setID, flashcards, open}) {
       })
   }
 
-  function redo() {
-    console.log("redo")
-  }
-
   return (
     <>
-      <Overlay/>
-      <Frame>
-        <div>Session Report</div>
-        <div>Session Report</div>
-        <button onClick={handleSubmit}>Save results</button>
-        <button onClick={redo}>Redo</button>
-      </Frame>
+      <Overlay
+        variants={overlay}
+        initial="hidden"
+        animate="visible"
+        exit="exit"
+      >
+        <Frame variants={frame}>
+          <div>Session Report</div>
+          <div>Session Report</div>
+          <button onClick={handleSubmit}>Save results</button>
+          <button onClick={redo}>Redo</button>
+        </Frame>
+      </Overlay>
     </>
   )
+}
+
+const overlay = {
+  hidden: {
+    opacity: 0,
+  },
+  visible: {
+    opacity: 1,
+    transition: {
+      delayChildren: 0.1
+    }
+  },
+  exit: {
+    opacity: 0,
+  },
+}
+
+const frame = {
+  hidden: {
+    y: "-100vh",
+    opacity: 0,
+  },
+  visible: {
+    y: "0",
+    opacity: 1,
+    transition: {
+      duration: 0.1,
+      type: "spring",
+      damping: 25,
+      stiffness: 300,
+    },
+  },
+  exit: {
+    y: "-100vh",
+    opacity: 0,
+  },
 }
