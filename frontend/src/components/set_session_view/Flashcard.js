@@ -1,5 +1,5 @@
 import { useState, useRef } from "react"
-import { motion, useMotionValue, useTransform } from "framer-motion"
+import { motion, useDragControls, useMotionValue, useTransform } from "framer-motion"
 import styled from "styled-components"
 
 import CustomScroller from "react-custom-scroller"
@@ -8,14 +8,18 @@ import styles from "../../Example.module.css";
 export default function Flashcard(props) {
   const [isDraggingScroller, setIsDraggingScroller] = useState(false)
   const isDragging = useRef(false)
+  const [overlayMsg, setOverlayMsg] = useState("")
   const x = useMotionValue(0)
   const y = useMotionValue(0)
   const xLimit = 102
   const yLimit = 70
+  const overlayTransparency = useTransform(x, [-50, 0, 50], [0.8, 0, 0.8])
+  const overlayBackgroundColor = useTransform(overlayTransparency, value => "rgba(0, 0, 0, "+value+")")
+  const stampOpacity = useTransform(x, [-50, 0, 50], [1, 0, 1])
   const rotateZByX = useTransform(x, [-xLimit, xLimit], props.drag ? [-15, 15] : [0, 0])
   const rotateZByY = useTransform(y, [-yLimit, yLimit], props.drag ? [10, -10] : [0, 0])
   const rotateZ = useTransform([rotateZByX, rotateZByY], arr => arr[0] + arr[1])
-  
+
   // Compute color
   let cardColor = ["#8d7ed3", "#b4abe0", "#ddd9ef"][props.pos]
   if (props.cardData.expired_in < 1)
@@ -29,13 +33,16 @@ export default function Flashcard(props) {
   }
 
   function handleDragElastic(event, info) {
-    function easedClamp(offset, limit, mValue) {
-      if (offset < -limit) mValue.set(-limit * 0.3)
-      else if (offset > limit) mValue.set(limit * 0.3)
-    }
+    if (info.offset.x > 0) setOverlayMsg("Correct")
+    else if (info.offset.x < 0) setOverlayMsg("Incorrect")
+    
+    // function easedClamp(offset, limit, mValue) {
+    //   if (offset < -limit) mValue.set(-limit * 0.3)
+    //   else if (offset > limit) mValue.set(limit * 0.3)
+    // }
 
-    if (y.get() === 0) easedClamp(info.offset.x, xLimit, x) // Horizontal movement
-    else if (x.get() === 0) easedClamp(info.offset.y, yLimit, y) // Vertical movement
+    // if (y.get() === 0) easedClamp(info.offset.x, xLimit, x) // Horizontal movement
+    // else if (x.get() === 0) easedClamp(info.offset.y, yLimit, y) // Vertical movement
   }
 
   function handleDragEnd(event, info) {
@@ -91,7 +98,7 @@ export default function Flashcard(props) {
             onMouseDown={() => setIsDraggingScroller(true)}
             onMouseUp={() => setIsDraggingScroller(false)}
           >
-            <div onMouseDown={e => e.stopPropagation()}>
+            <div onMouseDown={e => {console.log("here"); e.stopPropagation()}}>
             {props.cardData.front}
             Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
             
@@ -117,6 +124,13 @@ export default function Flashcard(props) {
           </Content>
         }
       </Side>
+      <Overlay style={{backgroundColor: overlayBackgroundColor}}>
+        <OverlayContentOuter overlayMsg={overlayMsg} style={{opacity: stampOpacity}}>
+          <OverlayContentInner overlayMsg={overlayMsg}>
+            {overlayMsg}
+          </OverlayContentInner>
+        </OverlayContentOuter>
+      </Overlay>
     </FlashcardContainer>
   )
 }
@@ -139,6 +153,35 @@ const FlashcardContainer = styled(motion.div)`
   user-select: none;
 
   transform-style: preserve-3d;
+`
+
+const Overlay = styled(motion.div)`
+  width: 290px;
+  height: 340px;
+  border-radius: 25px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`
+
+const OverlayContentOuter = styled(motion.div)`
+  transform: rotate(-50deg);
+  font-size: 64px;
+  padding: 5px;
+  border-radius: 50px;
+  border: 3px dashed ${props => props.overlayMsg === "Correct" ? "#4bb543" : "#ca0b00"};
+  pointer-events: none; /* (!) Avoid capturing events */
+  ${'' /* border: 3px dashed #f0d500; */}
+  ${'' /* border: 3px dashed #ca0b00; */}
+`
+
+const OverlayContentInner = styled(motion.div)`
+  padding: 0 16px;
+  border-radius: 50px;
+  color: ${props => props.overlayMsg === "Correct" ? "#4bb543" : "#ca0b00"};
+  ${'' /* color: #f0d500; */}
+  ${'' /* color: #ca0b00; */}
 `
 
 const Side = styled(motion.div)`

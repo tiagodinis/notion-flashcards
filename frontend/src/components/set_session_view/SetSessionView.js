@@ -58,7 +58,7 @@ export default function SetSessionView() {
     const newProgress = flashcards.current.reduce(isAnswered, 0) / flashcards.current.length
     setProgress(newProgress)
     // if (newProgress === 1) setResultModalOpen(true)
-    setResultModalOpen(true)
+    // setResultModalOpen(true)
   }
 
   function skip() {
