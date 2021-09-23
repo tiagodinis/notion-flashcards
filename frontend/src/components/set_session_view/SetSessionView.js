@@ -57,8 +57,7 @@ export default function SetSessionView() {
     const isAnswered = (acc, f) => acc + (f.sessionResult === undefined ? 0 : 1)
     const newProgress = flashcards.current.reduce(isAnswered, 0) / flashcards.current.length
     setProgress(newProgress)
-    // if (newProgress === 1) setResultModalOpen(true)
-    // setResultModalOpen(true)
+    if (newProgress === 1) setResultModalOpen(true)
   }
 
   function skip() {
@@ -100,16 +99,14 @@ export default function SetSessionView() {
             {showable.length > 2 &&
               <Flashcard key={showable[2]}
                 pos={2} cardData={flashcards.current[showable[2]]}
-                // initial={{scale: 0.9, x: 28, opacity: 0}}
-                // animate={{scale: 0.9, x: 28, opacity: 0.25}}
+                initial={false}
                 animate={{scale: 0.9, x: 28}}
               />
             }
             {showable.length > 1 &&
               <Flashcard key={showable[1]}
                 pos={1} cardData={flashcards.current[showable[1]]}
-                // initial={{scale: 0.9, x: 24, opacity: 0.25}}
-                // animate={{scale: 0.96, x: 12, opacity: 0.5}}
+                initial={false}
                 animate={{scale: 0.96, x: 12}}
               />
             }
@@ -119,7 +116,8 @@ export default function SetSessionView() {
                 exitX={exitX} setExitX={setExitX}
                 skip={skip} setCardResult={setCardResult}
                 animate={{scale: 1, x: 0}}
-                drag canFlip
+                drag
+                canFlip
                 isFlipped={isFlipped} setIsFlipped={newFlipState => setIsFlipped(newFlipState)}
               />
             }
@@ -127,9 +125,7 @@ export default function SetSessionView() {
         </CardStack>
       }
 
-      <AnimatePresence
-        initial={false}
-      >
+      <AnimatePresence initial={false}>
         {resultModalOpen && <SessionReport redo={redo}/>}
       </AnimatePresence>
     </>
@@ -137,9 +133,14 @@ export default function SetSessionView() {
 }
 
 const CardStack = styled(motion.div)`
-  position: relative;
-  left: calc(50% - 150px);
-  width: 310px;
+  @media (min-height: 820px) {
+    top: calc(100px + (100vh - 820px) * 0.4);
+  }
+
+  position: absolute;
+  --width: calc(min(100vw - 20px, 460px));
+  left: calc(50vw - var(--width) * 0.5);
+  width: var(---width);
 
   display: flex;
 `
