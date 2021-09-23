@@ -40,18 +40,20 @@ export default function Flashcard(props) {
 
   useLayoutEffect(() => {
     if (frontFontSize === 16) return
-    const outerRect = outerContentEl.current.getBoundingClientRect().height
-    const frontInnerHeight = frontInnerContentEl.current.getBoundingClientRect().height
-    if (frontInnerHeight > outerRect) setFrontFontSize(frontFontSize - 2)
-    else isSized.current = true
+    const outerRect = outerContentEl.current.getBoundingClientRect()
+    const frontInner = frontInnerContentEl.current.getBoundingClientRect()
+    if (frontInner.height > outerRect.height) setFrontFontSize(frontFontSize - 2)
+    else if (frontInner.width > 400) setFrontFontSize(frontFontSize - 2)
   }, [frontFontSize])
 
   useLayoutEffect(() => {
     if (!props.isFlipped || !backInnerContentEl.current || backFontSize === 16) return
 
-    const outerRect = outerContentEl.current.getBoundingClientRect().height
-    const backInnerHeight = backInnerContentEl.current.getBoundingClientRect().height
-    if (backInnerHeight > outerRect) setBackFontSize(backFontSize - 2)
+    const outerRect = outerContentEl.current.getBoundingClientRect()
+    const backInner = backInnerContentEl.current.getBoundingClientRect()
+    if (backInner.height > outerRect.height) setBackFontSize(backFontSize - 2)
+    else if (backInner.width > (outerRect.width - 16)) setBackFontSize(backFontSize - 2)
+    // else isSized.current = true
   }, [backFontSize, props.isFlipped])
 
   // (!) Combine drag and flip rotation transformation sequence (they use different defaults)
@@ -218,8 +220,7 @@ const OuterContent = styled(motion.div)`
 
 const InnerContent = styled(motion.div)`
   height: fit-content;
-  width: calc(min(100vw - 90px, 400px));
-  overflow-wrap: break-word;
+  width: fit-content;
   white-space: pre-wrap;
 
   font-size: ${props => props.fontSize}px;
