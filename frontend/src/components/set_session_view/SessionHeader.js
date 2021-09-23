@@ -1,11 +1,11 @@
 import { motion, animate, useMotionValue, useTransform } from "framer-motion"
-import { useEffect } from "react"
+import { useEffect, useRef } from "react"
 import styled from "styled-components"
 import ArrowHead2SVG from "../svg/ArrowHead2SVG"
 import QuestionsMarkSVG from "../svg/QuestionsMarkSVG"
 
 export default function SessionHeader({ setName, setSize, onGoBack, progress }) {
-  const barMaxWidth = 100;
+  const barMaxWidth = window.innerWidth > 940 ? 160 : 100
   // (!) Clamp motionValue so it doesn't exceed background bar
   const startingWidth = useMotionValue(0)
   const width = useTransform(startingWidth, [0, barMaxWidth], [0, barMaxWidth])
@@ -13,7 +13,7 @@ export default function SessionHeader({ setName, setSize, onGoBack, progress }) 
   useEffect(() => {
     const controls = animate(startingWidth, progress * barMaxWidth, {
       type: "spring",
-      stiffness: 50,
+      stiffness: 80,
       onComplete: v => {}
     })
     return controls.stop
@@ -27,11 +27,11 @@ export default function SessionHeader({ setName, setSize, onGoBack, progress }) 
 
       <HeaderDataContainer>
         <SetName>{setName}</SetName>
-        <ProgressContainer>
+        <ProgressContainer >
           <SetSize>{setSize} cards</SetSize>
-          <ProgressBar maxWidth={barMaxWidth}>
-            <div/>
-            <motion.div style={{width}}/>
+          <ProgressBar barMaxWidth={barMaxWidth}>
+            <div/> {/* Background */}
+            <motion.div style={{width}}/> {/* Foreground */}
           </ProgressBar>
         </ProgressContainer>
       </HeaderDataContainer>
@@ -64,6 +64,10 @@ const HeaderDataContainer = styled.div`
 `
 
 const SetName = styled.div`
+  @media (min-width: 940px) {
+    font-size: 32px;
+  }
+
   font-size: 20px;
   font-weight: bold;
   color: #232039;
@@ -75,11 +79,6 @@ const SetName = styled.div`
   word-break: break-word;
   white-space: normal;
   overflow: hidden;
-
-  /* white-space: normal;
-  overflow: hidden;
-  text-overflow: ellipsis; */
-  /* border: 1px solid black; */
 `
 
 const ProgressContainer = styled.div`
@@ -91,8 +90,6 @@ const SetSize = styled.div`
 `
 
 const ProgressBar = styled(motion.div)`
-  --max-width: 200px;
-
   div:first-child {
     margin-left: 10px;
     position: relative;
@@ -100,7 +97,7 @@ const ProgressBar = styled(motion.div)`
     border-radius: 8px;
     top: 6px;
     background-color: #e2e2e2;
-    width: ${props => props.maxWidth}px;
+    width: ${props => props.barMaxWidth}px;
   }
 
   div:last-child {
