@@ -31,7 +31,6 @@ export default function Flashcard(props) {
   const isPresent = useIsPresent()
 
   const baseFontSize = 80
-  const isSized = useRef(false)
   const outerContentEl = useRef()
   const frontInnerContentEl = useRef()
   const backInnerContentEl = useRef()
@@ -53,7 +52,6 @@ export default function Flashcard(props) {
     const backInner = backInnerContentEl.current.getBoundingClientRect()
     if (backInner.height > outerRect.height) setBackFontSize(backFontSize - 2)
     else if (backInner.width > (outerRect.width - 16)) setBackFontSize(backFontSize - 2)
-    // else isSized.current = true
   }, [backFontSize, props.isFlipped])
 
   // (!) Combine drag and flip rotation transformation sequence (they use different defaults)
@@ -145,7 +143,7 @@ export default function Flashcard(props) {
             onMouseUp={() => setIsDraggingScroller(false)}
           >
             <Test onMouseDown={e => e.stopPropagation()}>
-              <InnerContent ref={frontInnerContentEl} isSized={isSized.current} fontSize={frontFontSize}>
+              <InnerContent ref={frontInnerContentEl} fontSize={frontFontSize}>
               {props.cardData.front.replaceAll("\\n", "\n")}
               // Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
           
@@ -224,7 +222,7 @@ const InnerContent = styled(motion.div)`
   white-space: pre-wrap;
 
   font-size: ${props => props.fontSize}px;
-  text-align: ${props => false ? "left" : "center"};
+  text-align: ${props => props.fontSize === 16 ? "left" : "center"};
 `
 
 const Test = styled.div`
