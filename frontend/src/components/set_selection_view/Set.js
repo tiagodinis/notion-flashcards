@@ -7,11 +7,11 @@ export default function Set({set, gridIndex, onSetSelected}) {
   const [hovered, setHovered] = useState(false)
 
   // Compute color
-  let setColor = {base: "hsl(251, 49%, 66%)", highlight: "hsl(251, 49%, 58%)"}
+  let setColor = {base: "hsl(251, 49%, 66%)", highlight: "hsl(251, 49%, 58%)", shadow: "hsl(251 49% 30% / 0.2)"}
   if (set.avg_expiration < 1)
-    setColor = {base: "hsl(4, 90%, 70%)", highlight: "hsl(4, 90%, 63%)"}
+    setColor = {base: "hsl(4, 90%, 70%)", highlight: "hsl(4, 90%, 63%)", shadow: "hsl(4 90% 30% / 0.2)"}
   else if (set.avg_expiration < 5)
-    setColor = {base: "hsl(23, 100%, 70%)", highlight: "hsl(23, 100%, 63%)"}
+    setColor = {base: "hsl(23, 100%, 70%)", highlight: "hsl(23, 100%, 63%)", shadow: "hsl(23 100% 30% / 0.2)"}
 
   return (
     <OuterSet key={set.id}
@@ -19,7 +19,8 @@ export default function Set({set, gridIndex, onSetSelected}) {
       variants={setVariants}
       custom={{gridIndex: gridIndex, setColor: setColor.base}}
       initial={"hidden"} animate={"show"} exit={"hidden"}
-      whileHover={{y: -5, backgroundColor: setColor.highlight}}
+      whileHover={{y: window.innerWidth > 1140 ? -6 : -3, backgroundColor: setColor.highlight}}
+      shadowColor={setColor.shadow}
       onHoverStart={() => setHovered(true)}
       onHoverEnd={() => setHovered(false)}
       onClick={onSetSelected}
@@ -43,13 +44,24 @@ const OuterSet = styled(motion.div)`
     width: 350px;
     height: 200px;
     border-radius: 20px;
+
+    box-shadow: ${props =>
+      "2px 4px 8px " + props.shadowColor
+      + ", 4px 8px 16px " + props.shadowColor
+    };
+    &:hover {
+      box-shadow: ${props =>
+        "4px 8px 8px " + props.shadowColor
+        + ", 8px 16px 16px " + props.shadowColor
+      };
+    }
+    transition: box-shadow 0.1s ease-in-out;
   }
 
   width: 300px;
   height: 150px;
 
   border-radius: 15px;
-  box-shadow: 0 0 50px 1px rgba(0, 0, 0, .2);
 
   cursor: pointer;
   display: flex;
