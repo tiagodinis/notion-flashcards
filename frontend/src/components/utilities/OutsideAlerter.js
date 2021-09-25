@@ -10,7 +10,7 @@ export default function OutsideAlerter({ onOutsideClick, children }) {
 
     document.addEventListener("mousedown", handleClickOutside)
     return () => document.removeEventListener("mousedown", handleClickOutside)
-  }, [wrapperRef])
+  }, [])
 
   return <div ref={wrapperRef}>{children}</div>
 }

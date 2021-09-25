@@ -1,46 +1,47 @@
-import { useCallback, useEffect, useRef, useState } from "react"
+import { useEffect, useLayoutEffect, useRef, useState } from "react"
 import { AnimatePresence, motion, useAnimation } from "framer-motion"
-import OutsideAlerter from "../utilities/OutsideAlerter"
 import styled from "styled-components"
+import OutsideAlerter from "../utilities/OutsideAlerter"
 import MagnifyingGlassSVG from "../svg/MagnifyingGlassSVG"
 import RefreshCircleSVG from "../svg/RefreshCircleSVG"
 import ArrowHead1SVG from "../svg/ArrowHead1SVG"
 
 export default function SearchBar(props) {
-  const [openSortMenu, setOpenSortMenu] = useState(false)
+  const [isSortMenuOpen, setIsSortMenuOpen] = useState(false)
   const [sortMenuDims, setSortMenuDims] = useState({bottom: 0, left: 0, width: 0})
   const inputEl = useRef()
+  const sorterEl = useRef()
   const magnifyingControls = useAnimation()
   const circleControls = useAnimation()
-  const refreshing = useRef(false)
+  const isRefreshing = useRef(false)
 
-  useEffect(() => {
-    if (props.refreshing) (async () => {
-      refreshing.current = true
-      await magnifyingControls.start({opacity: 0, transition: {duration: 0.15, ease: "easeOut"}})
-      await circleControls.start({opacity: 1, transition: {duration: 0.15, ease: "easeIn"}})
-      while (refreshing.current) {
-        await circleControls.start({
-          rotate: 180, transition: {duration: 0.6, ease: "easeInOut"}})
-        circleControls.set({rotate: 0})
-      }
-      await circleControls.start({opacity: 0, transition: {duration: 0.15, ease: "easeOut"}})
-      magnifyingControls.start({opacity: 1, transition: {duration: 0.15, ease: "easeIn"}})
-    })()
-    else refreshing.current = false
-  }, [props.refreshing])
-
-  // Update sort menu dimensions when Sorter changes
-  const measureRef = useCallback(node => {
-    if (node === null) return
-    const rect = node.getBoundingClientRect()
+  // Guarantee sort menu aligns with sorter dimensions before showing
+  useLayoutEffect(() => {
+    if (!isSortMenuOpen) return
+    const rect = sorterEl.current.getBoundingClientRect()
     setSortMenuDims({bottom: rect.bottom + window.pageYOffset, left: rect.x, width: rect.width})
-  }, [openSortMenu])
+  }, [isSortMenuOpen])
 
   function selectSortMetric(newSortMetric) {
     props.setSortMetric(newSortMetric)
-    setOpenSortMenu(false)
+    setIsSortMenuOpen(false)
   }
+
+  useEffect(() => {
+    if (props.isRefreshing)
+      (async () => {
+        await magnifyingControls.start({opacity: 0, transition: {duration: 0.15, ease: "easeOut"}})
+        await circleControls.start({opacity: 1, transition: {duration: 0.15, ease: "easeIn"}})
+        isRefreshing.current = true
+        while (isRefreshing.current) {
+          circleControls.set({rotate: 0})
+          await circleControls.start({rotate: 180, transition: {duration: 0.6, ease: "easeInOut"}})
+        }
+        await circleControls.start({opacity: 0, transition: {duration: 0.15, ease: "easeOut"}})
+        magnifyingControls.start({opacity: 1, transition: {duration: 0.15, ease: "easeIn"}})
+      })()
+    else isRefreshing.current = false // Stops async loop
+  }, [props.isRefreshing])
 
   return (
     <SearchBarContainer onClick={() => inputEl.current.focus()}>
@@ -54,24 +55,24 @@ export default function SearchBar(props) {
       <input ref={inputEl} type="text" value={props.searchStr} placeholder="Search..."
         onChange={e => props.setSearchStr(e.target.value)}
       />
+
       <VerticalDivider/>
-      <OutsideAlerter onOutsideClick={() => setOpenSortMenu(false)}>
-        <Sorter ref={measureRef}
-          onClick={e => {e.stopPropagation(); setOpenSortMenu(!openSortMenu)}}
-        >
+
+      <OutsideAlerter onOutsideClick={() => setIsSortMenuOpen(false)}>
+        <Sorter ref={sorterEl} onClick={() => setIsSortMenuOpen(!isSortMenuOpen)}>
           <SortMetric>{props.sortMetric}</SortMetric>
-          <SelectArrowContainer initial={{rotate: 0}} animate={{rotate: openSortMenu ? 180 : 0}}>
+          <SelectArrowContainer initial={{rotate: 0}} animate={{rotate: isSortMenuOpen ? 180 : 0}}>
             <ArrowHead1SVG dim="11" color="#242337"/>
           </SelectArrowContainer>
           <AnimatePresence>
-            {openSortMenu &&
+            {isSortMenuOpen &&
               <SortMenu
                 sortMenuDims={sortMenuDims}
                 initial={{opacity: 0}} animate={{opacity: 1}} exit={{opacity: 0}}
                 transition={{duration: 0.2}}
               >
-                {props.sortMetricList.map(sm =>
-                  <div key={sm} onClick={() => selectSortMetric(sm)}>{sm}</div>
+                {props.sortMetricList.map(sMetric =>
+                  <div key={sMetric} onClick={() => selectSortMetric(sMetric)}>{sMetric}</div>
                 )}
               </SortMenu>
             }
@@ -130,7 +131,7 @@ const SearchBarContainer = styled.div`
     bottom: 0px;
     margin-left: 10px;
     margin-right: 13px;
-    min-width: 0px; /* (!) Can be collapsed, sorter options more important*/
+    min-width: 0px; /* (!) Input can be collapsed, sorter options more important*/
     flex-grow: 1;
     border: 0;
     outline: none;

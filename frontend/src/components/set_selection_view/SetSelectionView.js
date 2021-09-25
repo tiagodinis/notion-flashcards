@@ -1,22 +1,27 @@
 import { useState, useEffect, useRef, useContext } from "react"
-import { motion, useAnimation } from "framer-motion"
 import { FadeContext } from "../utilities/FadeContainer"
 import { AnimatePresence } from "framer-motion"
 import styled from "styled-components"
 import SearchBar from "./SearchBar"
 import Set from "./Set"
 import UpButton from "./UpButton"
-import RefreshCircleSVG from "../svg/RefreshCircleSVG"
 
 export default function SetSelectionView() {
   const sets = useRef([])
-  const [refreshing, setRefreshing] = useState(false)
   const [visibleSets, setVisibleSets] = useState([])
+  const [isRefreshing, setRefreshing] = useState(false)
   const [searchStr, setSearchStr] = useState("")
   const [sortMetric, setSortMetric] = useState("A-Z")
-  const [error, setError] = useState("")
   const startFade = useContext(FadeContext)
+  const [error, setError] = useState("")
+  const sortMap = {
+    "A-Z": sets => sets.sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase())),
+    "Z-A": sets => sets.sort((b, a) => a.name.toLowerCase().localeCompare(b.name.toLowerCase())),
+    "Stalest": sets => sets.sort((a, b) => a.avg_expiration - b.avg_expiration),
+    "Freshest": sets => sets.sort((b, a) => a.avg_expiration - b.avg_expiration),
+  }
 
+  // Fetch and show set data (with server updating possibly uncached data)
   function refresh() {
     setRefreshing(true)
     fetch("/api/syncedSets")
@@ -55,13 +60,6 @@ export default function SetSelectionView() {
     setVisibleSets(sortMap[sortMetric](filteredSets))
   }
 
-  const sortMap = {
-    "A-Z": sets => sets.sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase())),
-    "Z-A": sets => sets.sort((b, a) => a.name.toLowerCase().localeCompare(b.name.toLowerCase())),
-    "Stalest": sets => sets.sort((a, b) => a.avg_expiration - b.avg_expiration),
-    "Freshest": sets => sets.sort((b, a) => a.avg_expiration - b.avg_expiration),
-  }
-
   return (
     <>
       {error && <div>{error}</div>}
@@ -72,7 +70,7 @@ export default function SetSelectionView() {
         sortMetric={sortMetric}
         setSortMetric={newSortMetric => setSortMetric(newSortMetric)}
         sortMetricList={Object.keys(sortMap)}
-        refreshing={refreshing}
+        isRefreshing={isRefreshing}
       />
 
       <NotionOptions>

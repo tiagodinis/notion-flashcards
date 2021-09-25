@@ -5,37 +5,31 @@ import { motion } from "framer-motion"
 export const FadeContext = createContext()
 
 export default function FadeContainer({ children }) {
-  const [animationTarget, setAnimationTarget] = useState("visible")
-  const history = useHistory()
+  const [opacityTarget, setOpacityTarget] = useState(1)
   const targetPath = useRef("/")
-
-  function onFadeOutComplete() {
-    if (animationTarget === "hidden") {
-      history.push(targetPath.current)
-      setAnimationTarget("visible")
-    }
-  }
+  const history = useHistory()
 
   function startFade(newPath) {
     targetPath.current = newPath
-    setAnimationTarget("hidden")
+    setOpacityTarget(0)
+  }
+
+  function onFadeOutComplete() {
+    if (opacityTarget === 0) {
+      history.push(targetPath.current)
+      setOpacityTarget(1)
+    }
   }
 
   return (
     <FadeContext.Provider value={startFade}>
       <motion.div
-        variants={fadeStates}
-        initial={"hidden"}
-        animate={animationTarget}
+        initial={{opacity: 0}}
+        animate={{opacity: opacityTarget}}
         onAnimationComplete={onFadeOutComplete}
       >
         {children}
       </motion.div>
     </FadeContext.Provider>
   )
-}
-
-const fadeStates = {
-  hidden: { opacity: 0},
-  visible: { opacity: 1}
 }

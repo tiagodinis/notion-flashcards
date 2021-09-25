@@ -1,9 +1,8 @@
 import { useState, useRef, useLayoutEffect } from "react"
 import { motion, useIsPresent, useMotionValue, useTransform } from "framer-motion"
 import styled from "styled-components"
-
 import CustomScroller from "react-custom-scroller"
-import styles from "../../Example.module.css";
+import csStyles from "../../CustomScroller.module.css";
 
 export default function Flashcard(props) {
   const [isDraggingScroller, setIsDraggingScroller] = useState(false)
@@ -11,15 +10,23 @@ export default function Flashcard(props) {
   const [overlayMsg, setOverlayMsg] = useState("")
   const x = useMotionValue(0)
   const y = useMotionValue(0)
-  const dragElastic = 0.3
-  const xOverlayLimit = 50
-  const yOverlayLimit = 40
-  const overlayXTransparency = useTransform(x, [-xOverlayLimit, -7, 7, xOverlayLimit], props.pos === 0 ? [0.7, 0, 0, 0.7] : [0, 0, 0, 0])
-  const overlayYTransparency = useTransform(y, [-yOverlayLimit, -7, 7, yOverlayLimit], props.pos === 0 ? [0.7, 0, 0, 0.7] : [0, 0, 0, 0])
-  const overlayBackgroundColor = useTransform([overlayXTransparency, overlayYTransparency], arr => "rgba(0, 0, 0, " + (arr[0] + arr[1]) + ")")
+  const dragElastic = window.innerHeight > 840 ? 0.5 : 0.3
+  const isPresent = useIsPresent()
 
-  const stampXOpacity = useTransform(x, [-xOverlayLimit, -7, 7, xOverlayLimit], props.pos === 0 ? [1, 0, 0, 1] : [0, 0, 0, 0])
-  const stampYOpacity = useTransform(y, [-yOverlayLimit, -7, 7, yOverlayLimit], props.pos === 0 ? [1, 0, 0, 1] : [0, 0, 0, 0])
+  const xOverlayLimit = window.innerHeight > 840 ? 200 : 50
+  const yOverlayLimit = 40
+  const overlayStart = 15
+  const xRange = [-xOverlayLimit, -overlayStart, overlayStart, xOverlayLimit]
+  const yRange = [-yOverlayLimit, -overlayStart, overlayStart, yOverlayLimit]
+  const overlayTransparency = props => props.pos === 0 ? [0.7, 0, 0, 0.7] : [0, 0, 0, 0]
+  const overlayXTransparency = useTransform(x, xRange, overlayTransparency(props))
+  const overlayYTransparency = useTransform(y, yRange, overlayTransparency(props))
+  const overlayBackgroundColor = useTransform( // (!) Transparency instead of opacity so it is clickable
+    [overlayXTransparency, overlayYTransparency], arr => "rgba(0, 0, 0, " + (arr[0] + arr[1]) + ")")
+
+  const stampOpacityRange = props => props.pos === 0 ? [1, 0, 0, 1] : [0, 0, 0, 0]
+  const stampXOpacity = useTransform(x, xRange, stampOpacityRange(props))
+  const stampYOpacity = useTransform(y, yRange, stampOpacityRange(props))
   const stampOpacity = useTransform([stampXOpacity, stampYOpacity], arr => arr[0] + arr[1])
 
   const xRotLimit = 80
@@ -27,8 +34,6 @@ export default function Flashcard(props) {
   const rotateZByX = useTransform(x, [-xRotLimit, xRotLimit], props.drag ? [-15, 15] : [0, 0])
   const rotateZByY = useTransform(y, [-yRotLimit, yRotLimit], props.drag ? [10, -10] : [0, 0])
   const rotateZ = useTransform([rotateZByX, rotateZByY], arr => arr[0] + arr[1])
-
-  const isPresent = useIsPresent()
 
   const baseFontSize = 80
   const outerContentEl = useRef()
@@ -42,7 +47,7 @@ export default function Flashcard(props) {
     const outerRect = outerContentEl.current.getBoundingClientRect()
     const frontInner = frontInnerContentEl.current.getBoundingClientRect()
     if (frontInner.height > outerRect.height) setFrontFontSize(frontFontSize - 2)
-    else if (frontInner.width > 400) setFrontFontSize(frontFontSize - 2)
+    else if (frontInner.width > (outerRect.width - 16)) setFrontFontSize(frontFontSize - 2)
   }, [frontFontSize])
 
   useLayoutEffect(() => {
@@ -60,22 +65,18 @@ export default function Flashcard(props) {
   }
 
   function handleDragElastic(event, info) {
-    // Clamp x and y motion values
-    function clampMValue(mValue, offset, limit) {
-      if (offset < -limit) mValue.set(-limit * dragElastic)
-      else if (offset > limit) mValue.set(limit * dragElastic)
-    }
-    if (y.get() === 0) clampMValue(x, info.offset.x, xRotLimit / dragElastic) // Horizontal movement
-    else if (x.get() === 0) clampMValue(y, info.offset.y, yRotLimit / dragElastic) // Vertical movement
-
-    // Set overlay message
+    // FIXME: doing this every frame!
+    // Clamp motion values and set overlay message
+    const clamp = (value, min, max) => Math.min(Math.max(value, min), max)
     if (y.get() === 0) { // Horizontal movement
-      if (info.offset.x > 0) setOverlayMsg("Correct")
-      else if (info.offset.x < 0) setOverlayMsg("Incorrect")
+      x.set(clamp(x.get(), -xRotLimit, xRotLimit)) 
+      if (x.get() > 0) setOverlayMsg("Correct")
+      else if (x.get() < 0) setOverlayMsg("Incorrect")
     }
     else if (x.get() === 0) { // Vertical movement
-      if (info.offset.y > 0) setOverlayMsg("Skip")
-      else if (info.offset.y < 0) setOverlayMsg("Undo")
+      y.set(clamp(y.get(), -yRotLimit, yRotLimit))
+      if (y.get() > 0) setOverlayMsg("Skip")
+      else if (y.get() < 0) setOverlayMsg("Undo")
     }
   }
 
@@ -84,28 +85,29 @@ export default function Flashcard(props) {
     const xAnswerLimit = xOverlayLimit / dragElastic
     const yAnswerLimit = yOverlayLimit / dragElastic
 
-    if (y.get() === 0) { // Horizontal movement
-      if (info.offset.x < -xAnswerLimit) {
+    const mValues = {x: x.get(), y: y.get()}
+
+    if (mValues.y === 0) { // Horizontal movement
+      if (mValues.x <= -xOverlayLimit) {
         props.setExitX(-xAnswerLimit)
         props.setCardResult(false)
       }
-      else if (info.offset.x > xAnswerLimit) {
+      else if (mValues.x >= xOverlayLimit) {
         props.setExitX(xAnswerLimit)
         props.setCardResult(true)
       }
     }
-    else if (x.get() === 0) { // Vertical movement
-      if (info.offset.y < -yAnswerLimit) {
+    else if (mValues.x === 0) { // Vertical movement
+      if (mValues.y <= -yOverlayLimit) {
         props.setExitX(0)
         console.log("undo")
       }
-      else if (info.offset.y > yAnswerLimit) {
+      else if (mValues.y >= yOverlayLimit) {
         props.setExitX(0)
         props.skip()
       }
     }
   }
-  
 
   return (
     <FlashcardContainer
@@ -115,7 +117,7 @@ export default function Flashcard(props) {
       transformTemplate={template}
       drag={(isDraggingScroller || !isPresent) ? {} : props.drag}
       dragConstraints={{left: 0, right: 0, top: 0, bottom: 0}}
-      dragElastic={0.3}
+      dragElastic={dragElastic}
       dragTransition={{ bounceStiffness: 600, bounceDamping: 20 }}
       onDrag={handleDragElastic}
       onDragStart={() => isDragging.current = true}
@@ -138,7 +140,7 @@ export default function Flashcard(props) {
     >
       <Side initial={{rotateY: "0deg"}}>
         <OuterContent ref={outerContentEl}>
-          <CustomScroller className={styles.scroller} innerClassName={styles.content}
+          <CustomScroller className={csStyles.scroller} innerClassName={csStyles.content}
             onMouseDown={() => setIsDraggingScroller(true)}
             onMouseUp={() => setIsDraggingScroller(false)}
           >
@@ -158,7 +160,7 @@ export default function Flashcard(props) {
       <Side initial={{rotateY: 180}}>
         {props.isFlipped && // (!) Fixes CustomController scroll ambiguity problem
           <OuterContent>
-            <CustomScroller className={styles.scroller} innerClassName={styles.content}
+            <CustomScroller className={csStyles.scroller} innerClassName={csStyles.content}
               onMouseDown={() => setIsDraggingScroller(true)}
               onMouseUp={() => setIsDraggingScroller(false)}
             >
@@ -201,7 +203,7 @@ const FlashcardContainer = styled(motion.div)`
 
   transform-style: preserve-3d;
 
-  z-index: ${props => !props.isPresent ? 50 : 0};
+  z-index: ${props => !props.isPresent ? 100 : 0};
 `
 
 const Side = styled(motion.div)`
