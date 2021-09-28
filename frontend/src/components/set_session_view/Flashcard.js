@@ -1,19 +1,21 @@
-import { useState, useRef, useLayoutEffect } from "react"
+import { useState, useRef, useLayoutEffect, useEffect } from "react"
 import { motion, useIsPresent, useMotionValue, useTransform } from "framer-motion"
 import styled from "styled-components"
 import CustomScroller from "react-custom-scroller"
 import csStyles from "../../CustomScroller.module.css";
+import { clamp, getPercentage, lerp } from "../../utilities/math";
+import useWindowSize from "../../utilities/custom_hooks/useWindowSize";
 
 export default function Flashcard(props) {
   const [isDraggingScroller, setIsDraggingScroller] = useState(false)
-  const isDragging = useRef(false)
+  const [isRecovered, setIsRecovered] = useState(true)
   const [overlayMsg, setOverlayMsg] = useState("")
   const x = useMotionValue(0)
   const y = useMotionValue(0)
-  const dragElastic = window.innerHeight > 840 ? 0.5 : 0.3
+  const dragElastic = 0.3
   const isPresent = useIsPresent()
 
-  const xOverlayLimit = window.innerHeight > 840 ? 200 : 50
+  const xOverlayLimit = 50
   const yOverlayLimit = 40
   const overlayStart = 15
   const xRange = [-xOverlayLimit, -overlayStart, overlayStart, xOverlayLimit]
@@ -21,7 +23,8 @@ export default function Flashcard(props) {
   const overlayTransparency = props => props.pos === 0 ? [0.7, 0, 0, 0.7] : [0, 0, 0, 0]
   const overlayXTransparency = useTransform(x, xRange, overlayTransparency(props))
   const overlayYTransparency = useTransform(y, yRange, overlayTransparency(props))
-  const overlayBackgroundColor = useTransform( // (!) Transparency instead of opacity so it is clickable
+  // (!) Transparency instead of opacity so it is clickable
+  const overlayBackgroundColor = useTransform(
     [overlayXTransparency, overlayYTransparency], arr => "rgba(0, 0, 0, " + (arr[0] + arr[1]) + ")")
 
   const stampOpacityRange = props => props.pos === 0 ? [1, 0, 0, 1] : [0, 0, 0, 0]
@@ -31,19 +34,29 @@ export default function Flashcard(props) {
 
   const xRotLimit = 80
   const yRotLimit = 70
-  const rotateZByX = useTransform(x, [-xRotLimit, xRotLimit], props.drag ? [-15, 15] : [0, 0])
-  const rotateZByY = useTransform(y, [-yRotLimit, yRotLimit], props.drag ? [10, -10] : [0, 0])
+  const maxXRot = lerp(getPercentage(props.height, 500, 820), 15, 5)
+  const maxYRot = lerp(getPercentage(props.height, 500, 820), 10, 5)
+  const rotateZByX = useTransform(x, [-xRotLimit, xRotLimit], props.drag ? [-maxXRot, maxXRot] : [0, 0])
+  const rotateZByY = useTransform(y, [-yRotLimit, yRotLimit], props.drag ? [maxYRot, -maxYRot] : [0, 0])
   const rotateZ = useTransform([rotateZByX, rotateZByY], arr => arr[0] + arr[1])
 
-  const baseFontSize = 80
+  const maxFontSize = 80
+  const minFontSize = 16
   const outerContentEl = useRef()
   const frontInnerContentEl = useRef()
   const backInnerContentEl = useRef()
-  const [frontFontSize, setFrontFontSize] = useState(baseFontSize)
-  const [backFontSize, setBackFontSize] = useState(baseFontSize)
+  const [frontFontSize, setFrontFontSize] = useState(maxFontSize)
+  const [backFontSize, setBackFontSize] = useState(maxFontSize)
+  const { width, height } = useWindowSize()
 
   useLayoutEffect(() => {
-    if (frontFontSize === 16) return
+    setFrontFontSize(maxFontSize)
+    setBackFontSize(maxFontSize)
+  }, [width, height])
+
+  useLayoutEffect(() => {
+    if (frontFontSize === minFontSize) return
+
     const outerRect = outerContentEl.current.getBoundingClientRect()
     const frontInner = frontInnerContentEl.current.getBoundingClientRect()
     if (frontInner.height > outerRect.height) setFrontFontSize(frontFontSize - 2)
@@ -51,7 +64,8 @@ export default function Flashcard(props) {
   }, [frontFontSize])
 
   useLayoutEffect(() => {
-    if (!props.isFlipped || !backInnerContentEl.current || backFontSize === 16) return
+    if (!props.isFlipped || !backInnerContentEl.current || backFontSize === minFontSize)
+      return
 
     const outerRect = outerContentEl.current.getBoundingClientRect()
     const backInner = backInnerContentEl.current.getBoundingClientRect()
@@ -59,15 +73,20 @@ export default function Flashcard(props) {
     else if (backInner.width > (outerRect.width - 16)) setBackFontSize(backFontSize - 2)
   }, [backFontSize, props.isFlipped])
 
+  useEffect(() => {
+    const unsubscribeX = x.onChange(() => {if (x.get() === 0) setIsRecovered(true)})
+    const unsubscribeY = y.onChange(() => {if (y.get() === 0) setIsRecovered(true)})
+    return () => { unsubscribeX(); unsubscribeY() }
+  }, [])
+
   // (!) Combine drag and flip rotation transformation sequence (they use different defaults)
   function template({ x, y, rotateZ, rotateY, scale }) {
     return `perspective(1000px) translate3d(${x}, ${y}, 0px) rotateZ(${rotateZ}) rotateY(${rotateY}) scale(${scale})`
   }
 
-  function handleDragElastic(event, info) {
-    // FIXME: doing this every frame!
+  function handleDrag(event, info) {
+    // (!) Confirm react is not actually setting a new state every frame
     // Clamp motion values and set overlay message
-    const clamp = (value, min, max) => Math.min(Math.max(value, min), max)
     if (y.get() === 0) { // Horizontal movement
       x.set(clamp(x.get(), -xRotLimit, xRotLimit)) 
       if (x.get() > 0) setOverlayMsg("Correct")
@@ -81,7 +100,7 @@ export default function Flashcard(props) {
   }
 
   function handleDragEnd(event, info) {
-    setTimeout(() => isDragging.current = false, 1) // (!) Avoid triggering flip
+    setIsRecovered(false)
     const xAnswerLimit = xOverlayLimit / dragElastic
     const yAnswerLimit = yOverlayLimit / dragElastic
 
@@ -112,15 +131,14 @@ export default function Flashcard(props) {
   return (
     <FlashcardContainer
       isPresent={isPresent}
-      onClick={() => {if (props.canFlip && !isDragging.current) props.setIsFlipped(!props.isFlipped)}}
+      onClick={() => {if (props.canFlip && !isDraggingScroller && isRecovered) props.setIsFlipped(!props.isFlipped)}}
       dragDirectionLock
       transformTemplate={template}
-      drag={(isDraggingScroller || !isPresent) ? {} : props.drag}
+      drag={(isDraggingScroller || !isPresent || !isRecovered) ? false : props.drag}
       dragConstraints={{left: 0, right: 0, top: 0, bottom: 0}}
       dragElastic={dragElastic}
       dragTransition={{ bounceStiffness: 600, bounceDamping: 20 }}
-      onDrag={handleDragElastic}
-      onDragStart={() => isDragging.current = true}
+      onDrag={handleDrag}
       onDragEnd={handleDragEnd}
       whileDrag={{cursor: "grabbing"}}
       style={{x: x, y: y, rotateZ: rotateZ, rotateY: 0, scale: 1}}
@@ -138,11 +156,11 @@ export default function Flashcard(props) {
         : ["#8d7ed3", "#b4abe0", "#ddd9ef"][props.pos]
       }
     >
-      <Side initial={{rotateY: "0deg"}}>
+      <Side initial={{rotateY: "0deg"}} isFlipped={props.isFlipped}>
         <OuterContent ref={outerContentEl}>
           <CustomScroller className={csStyles.scroller} innerClassName={csStyles.content}
             onMouseDown={() => setIsDraggingScroller(true)}
-            onMouseUp={() => setIsDraggingScroller(false)}
+            onMouseUp={() => setTimeout(() => setIsDraggingScroller(false), 1)}
           >
             <Test onMouseDown={e => e.stopPropagation()}>
               <InnerContent ref={frontInnerContentEl} fontSize={frontFontSize}>
@@ -157,12 +175,12 @@ export default function Flashcard(props) {
           </CustomScroller>
         </OuterContent>
       </Side>
-      <Side initial={{rotateY: 180}}>
+      <Side initial={{rotateY: 180}} isFlipped={props.isFlipped}>
         {props.isFlipped && // (!) Fixes CustomController scroll ambiguity problem
           <OuterContent>
             <CustomScroller className={csStyles.scroller} innerClassName={csStyles.content}
               onMouseDown={() => setIsDraggingScroller(true)}
-              onMouseUp={() => setIsDraggingScroller(false)}
+              onMouseUp={() => setTimeout(() => setIsDraggingScroller(false), 1)}
             >
               <Test onMouseDown={e => e.stopPropagation()}>
                 <InnerContent ref={backInnerContentEl} fontSize={backFontSize}>
@@ -209,13 +227,20 @@ const FlashcardContainer = styled(motion.div)`
 const Side = styled(motion.div)`
   position: absolute;
   backface-visibility: hidden;
+
+  ${'' /* border: 1px solid black; */}
+  margin-top: 25px;
+  margin-left: ${props => props.isFlipped ? -16 : 16}px;
+  width: calc(min(100vw - 74px, 416px));
+  height: calc(min(100vh - 210px, 410px));
 `
 
 const OuterContent = styled(motion.div)`
-  margin-top: 25px;
+${'' /* border: 1px solid black; */}
+  ${'' /* margin-top: 25px;
   margin-left: 16px;
   width: calc(min(100vw - 74px, 416px));
-  height: calc(min(100vh - 210px, 410px));
+  height: calc(min(100vh - 210px, 410px)); */}
 `
 
 const InnerContent = styled(motion.div)`

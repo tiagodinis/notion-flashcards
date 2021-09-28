@@ -1,12 +1,15 @@
 import { useState, useEffect, useRef, useContext } from "react"
 import { useParams } from "react-router-dom"
-import { FadeContext } from "../utilities/FadeContainer"
+import { FadeContext } from "../../utilities/components/FadeContainer"
 import { motion, AnimatePresence } from "framer-motion"
 import styled from "styled-components"
 import SessionHeader from "./SessionHeader"
 import Flashcard from "./Flashcard"
 import SessionFooter from "./SessionFooter"
 import SessionReport from "./SessionReport"
+import { GlobalStyle } from "../../GlobalStyle"
+import useWindowSize from "../../utilities/custom_hooks/useWindowSize"
+import { getPercentage, lerp } from "../../utilities/math"
 
 export default function SetSessionView() {
   const flashcards = useRef([])
@@ -16,9 +19,9 @@ export default function SetSessionView() {
   const [progress, setProgress] = useState(0)
   const [isFlipped, setIsFlipped] = useState(false)
   const [resultModalOpen, setResultModalOpen] = useState(false)
-  const [error, setError] = useState("")
   let { setID } = useParams()
   const startFade = useContext(FadeContext)
+  const {width, height} = useWindowSize()
 
   // Fetch and show session data
   useEffect(() => {
@@ -31,9 +34,7 @@ export default function SetSessionView() {
         flashcards.current = data.flashcards
         setName.current = data.setName
         setShowable(getShowableCardsFromIndex(0))
-        setError("") // FIXME: what is this?
       })
-      .catch(err => setError(err.message))
   }, [])
 
   // Max 3 untested cards from given index forward (looping the array)
@@ -57,7 +58,8 @@ export default function SetSessionView() {
     const isAnswered = (acc, f) => acc + (f.sessionResult === undefined ? 0 : 1)
     const newProgress = flashcards.current.reduce(isAnswered, 0) / flashcards.current.length
     setProgress(newProgress)
-    if (newProgress === 1) setResultModalOpen(true)
+    // if (newProgress === 1) setResultModalOpen(true)
+    setResultModalOpen(true)
   }
 
   function skip() {
@@ -76,7 +78,7 @@ export default function SetSessionView() {
 
   return (
     <>
-      {/* {error && <div>{error}</div>} */}
+      <GlobalStyle hideScrollbar={true}/>
 
       {setName &&
         <SessionHeader
@@ -100,14 +102,14 @@ export default function SetSessionView() {
               <Flashcard key={showable[2]}
                 pos={2} cardData={flashcards.current[showable[2]]}
                 initial={false}
-                animate={{scale: 0.9, x: 28}}
+                animate={{scale: 0.9, x: lerp(getPercentage(width, 320, 490), 28,  39)}}
               />
             }
             {showable.length > 1 &&
               <Flashcard key={showable[1]}
                 pos={1} cardData={flashcards.current[showable[1]]}
                 initial={false}
-                animate={{scale: 0.96, x: 12}}
+                animate={{scale: 0.96, x: lerp(getPercentage(width, 320, 490), 12,  17)}}
               />
             }
             {showable.length > 0 &&
@@ -118,6 +120,8 @@ export default function SetSessionView() {
                 animate={{scale: 1, x: 0}}
                 drag
                 canFlip
+                width={width}
+                height={height}
                 isFlipped={isFlipped} setIsFlipped={newFlipState => setIsFlipped(newFlipState)}
               />
             }
@@ -138,9 +142,11 @@ const CardStack = styled(motion.div)`
   }
 
   position: absolute;
-  --width: calc(min(100vw - 20px, 460px));
+  --width: calc(min(100vw - 20px, 470px));
   left: calc(50vw - var(--width) * 0.5);
   width: var(---width);
 
   display: flex;
 `
+
+// 890 - width / 890 - 320

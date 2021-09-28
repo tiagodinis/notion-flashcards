@@ -1,10 +1,12 @@
 import { useState, useEffect, useRef, useContext } from "react"
-import { FadeContext } from "../utilities/FadeContainer"
+import { FadeContext } from "../../utilities/components/FadeContainer"
 import { AnimatePresence } from "framer-motion"
 import styled from "styled-components"
+import { GlobalStyle } from "../../GlobalStyle"
 import SearchBar from "./SearchBar"
 import Set from "./Set"
 import UpButton from "./UpButton"
+import SessionReport from "../set_session_view/SessionReport"
 
 export default function SetSelectionView() {
   const sets = useRef([])
@@ -13,7 +15,6 @@ export default function SetSelectionView() {
   const [searchStr, setSearchStr] = useState("")
   const [sortMetric, setSortMetric] = useState("A-Z")
   const startFade = useContext(FadeContext)
-  const [error, setError] = useState("")
   const sortMap = {
     "A-Z": sets => sets.sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase())),
     "Z-A": sets => sets.sort((b, a) => a.name.toLowerCase().localeCompare(b.name.toLowerCase())),
@@ -34,22 +35,20 @@ export default function SetSelectionView() {
         filterAndSort()
         setRefreshing(false)
       })
-      .catch(err => setError(err.message))
   }
 
   // Fetch and show set data
-  useEffect(() => {
-    fetch("/api/sets")
-      .then(res => {
-        if (!res.ok) throw Error("Could not fetch data for that resource")
-        return res.json()
-      })
-      .then(data => {
-        sets.current = data
-        filterAndSort()
-      })
-      .catch(err => setError(err.message))
-  }, [])
+  // useEffect(() => {
+  //   fetch("/api/sets")
+  //     .then(res => {
+  //       if (!res.ok) throw Error("Could not fetch data for that resource")
+  //       return res.json()
+  //     })
+  //     .then(data => {
+  //       sets.current = data
+  //       filterAndSort()
+  //     })
+  // }, [])
 
   // Update visible sets on search term or sort metric change
   useEffect(filterAndSort, [searchStr, sortMetric])
@@ -62,9 +61,11 @@ export default function SetSelectionView() {
 
   return (
     <>
-      {error && <div>{error}</div>}
+      <GlobalStyle/>
 
-      <SearchBar
+      <SessionReport/>
+
+      {/* <SearchBar
         searchStr={searchStr}
         setSearchStr={newStr => setSearchStr(newStr)}
         sortMetric={sortMetric}
@@ -88,7 +89,7 @@ export default function SetSelectionView() {
         </AnimatePresence>
       </SetGrid>
 
-      <UpButton/>
+      <UpButton/> */}
     </>
   )
 }

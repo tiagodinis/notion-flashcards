@@ -2,32 +2,7 @@ import { useHistory } from "react-router-dom"
 import styled from "styled-components"
 import { motion } from "framer-motion"
 
-const Overlay = styled(motion.div)`
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: #000000e1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`
 
-const Frame = styled(motion.div)`
-  position: absolute;
-  ${'' /* position: fixed; */}
-  width: clamp(50%, 500px, 90%);
-  height: min(50%, 300px);
-  margin: auto;
-  ${'' /* top: 50%;
-  left: 50%;
-  width: 500px;
-  height: 500px;
-  transform: translate(-50%, -50%); */}
-  background-color: #FFF;
-  z-index: 1000;
-`
 
 export default function SessionReport({setID, flashcards, redo}) {
   let history = useHistory()
@@ -78,10 +53,10 @@ export default function SessionReport({setID, flashcards, redo}) {
   return (
     <>
       <Overlay
-        variants={overlay}
-        initial="hidden"
-        animate="visible"
-        exit="exit"
+        // variants={overlay}
+        // initial="hidden"
+        // animate="visible"
+        // exit="exit"
       >
         <Frame variants={frame}>
           <div>Session Report</div>
@@ -93,6 +68,32 @@ export default function SessionReport({setID, flashcards, redo}) {
     </>
   )
 }
+
+const Overlay = styled(motion.div)`
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  background: #000000e1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`
+
+const Frame = styled(motion.div)`
+  position: absolute;
+  border-radius: 20px;
+  ${'' /* position: fixed; */}
+  width: clamp(50%, 500px, 90%);
+  height: min(50%, 300px);
+  margin: auto;
+  ${'' /* top: 50%;
+  left: 50%;
+  width: 500px;
+  height: 500px;
+  transform: translate(-50%, -50%); */}
+  background-color: #FFF;
+  z-index: 1000;
+`
 
 const overlay = {
   hidden: {

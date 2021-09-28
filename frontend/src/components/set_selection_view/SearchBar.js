@@ -1,10 +1,11 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react"
 import { AnimatePresence, motion, useAnimation } from "framer-motion"
 import styled from "styled-components"
-import OutsideAlerter from "../utilities/OutsideAlerter"
+import OutsideAlerter from "../../utilities/components/OutsideAlerter"
 import MagnifyingGlassSVG from "../svg/MagnifyingGlassSVG"
 import RefreshCircleSVG from "../svg/RefreshCircleSVG"
 import ArrowHead1SVG from "../svg/ArrowHead1SVG"
+import useWindowSize from "../../utilities/custom_hooks/useWindowSize"
 
 export default function SearchBar(props) {
   const [isSortMenuOpen, setIsSortMenuOpen] = useState(false)
@@ -14,13 +15,14 @@ export default function SearchBar(props) {
   const magnifyingControls = useAnimation()
   const circleControls = useAnimation()
   const isRefreshing = useRef(false)
+  const { width } = useWindowSize()
 
   // Guarantee sort menu aligns with sorter dimensions before showing
   useLayoutEffect(() => {
     if (!isSortMenuOpen) return
     const rect = sorterEl.current.getBoundingClientRect()
     setSortMenuDims({bottom: rect.bottom + window.pageYOffset, left: rect.x, width: rect.width})
-  }, [isSortMenuOpen])
+  }, [isSortMenuOpen, width])
 
   function selectSortMetric(newSortMetric) {
     props.setSortMetric(newSortMetric)
