@@ -1,11 +1,16 @@
 import { useHistory } from "react-router-dom"
 import styled from "styled-components"
 import { motion } from "framer-motion"
+import DisketteSVG from "../svg/DisketteSVG"
 
+import CancelSVG from "../svg/CancelSVG"
+import ArrowHead2SVG from "../svg/ArrowHead2SVG"
 
-
-export default function SessionReport({setID, flashcards, redo}) {
+export default function SessionReport({setID, flashcards, retry}) {
   let history = useHistory()
+  const correct = 33
+  const incorrect = 7
+  const avgLvl = 0.72
 
   function handleSubmit() {
     history.push("/")
@@ -51,28 +56,44 @@ export default function SessionReport({setID, flashcards, redo}) {
   }
 
   return (
-    <>
-      <Overlay
-        // variants={overlay}
-        // initial="hidden"
-        // animate="visible"
-        // exit="exit"
-      >
-        <Frame variants={frame}>
-          <div>Session Report</div>
-          <div>Session Report</div>
-          <button onClick={handleSubmit}>Save results</button>
-          <button onClick={redo}>Redo</button>
-        </Frame>
-      </Overlay>
-    </>
+    <Overlay
+      variants={overlay}
+      initial="hidden"
+      animate="visible"
+      exit="exit"
+    >
+      <Frame variants={frame}>
+        <Title>Session results</Title>
+        <SessionName>for <i>Botanical names: daily fruits</i></SessionName>
+        <Details>
+          <Row>
+            <Label>Correct:</Label>
+            <Value>{correct}</Value>
+          </Row>
+          <Row>
+            <Label>Incorrect:</Label>
+            <Value>{incorrect}</Value>
+          </Row>
+          <Row>
+            <Label>Avg. lvl:</Label>
+            <Value>{avgLvl}</Value>
+          </Row>
+        </Details>
+        <SaveBtn onClick={handleSubmit} whileHover={{y: -3}}>
+          <SaveBtnContent>Save Results</SaveBtnContent>
+        </SaveBtn>
+        <RetryBtn onClick={retry}>retry session</RetryBtn>
+      </Frame>
+    </Overlay>
   )
 }
 
 const Overlay = styled(motion.div)`
   position: fixed;
-  width: 100%;
-  height: 100%;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
   background: #000000e1;
   display: flex;
   align-items: center;
@@ -81,18 +102,109 @@ const Overlay = styled(motion.div)`
 
 const Frame = styled(motion.div)`
   position: absolute;
-  border-radius: 20px;
-  ${'' /* position: fixed; */}
-  width: clamp(50%, 500px, 90%);
-  height: min(50%, 300px);
+  border-radius: 5px;
+  /* width: clamp(50%, 500px, 90%); */
+  /* height: min(90%, 500px); */
+  width: 290px;
+  height: 350px;
   margin: auto;
-  ${'' /* top: 50%;
-  left: 50%;
-  width: 500px;
-  height: 500px;
-  transform: translate(-50%, -50%); */}
+
   background-color: #FFF;
   z-index: 1000;
+
+  font-family: "Rubik";
+`
+
+const Title = styled(motion.div)`
+  font-size: 30px;
+  text-align: center;
+  /* margin-top: 8px; */
+  margin-top: 20px;
+`
+
+const SessionName = styled(motion.div)`
+  text-align: center;
+  font-size: 14px;
+  color: grey;
+`
+
+const Details = styled(motion.div)`
+margin-top: 20px;
+display: flex;
+flex-direction: column;
+align-content: center;
+`
+
+const Row = styled(motion.div)`
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+`
+
+const Label = styled(motion.div)`
+  width: 100%;
+  height: fit-content;
+  margin-bottom: 5px;
+  margin-right: 10px;
+  text-align: right;
+`
+
+const Value = styled(motion.div)`
+  width: 100%;
+  font-size: 32px;
+`
+
+const SaveBtn = styled(motion.div)`
+  background-color: hsl(0 0% 24%);
+  
+  width: 200px;
+  height: 60px;
+  margin: auto;
+  margin-top: 28px;
+
+  border-radius: 10px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  box-shadow:
+    2px 4px 8px hsl(0 0% 20% / 0.4),
+    4px 8px 16px hsl(0 0% 20% / 0.4);
+
+  &:hover {
+    background-color: hsl(0 0% 20%);
+    box-shadow:
+      4px 8px 16px hsl(0 0% 20% / 0.4),
+      6px 12px 24px hsl(0 0% 20% / 0.4);
+
+    cursor: pointer;
+  }
+
+  transition: background-color 0.1s ease-in-out, box-shadow 0.1s ease-in-out;
+`
+
+const SaveBtnContent = styled(motion.div)`
+  position: relative;
+  bottom: 1px;
+  font-size: 24px;
+  color: white;
+`
+
+const RetryBtn = styled(motion.div)`
+  font-size: 14px;
+  width: fit-content;
+  margin: auto;
+  margin-top: 19px;
+
+  color: #666666;
+
+  &:hover {
+    color: #222222;
+    cursor: pointer;
+  }
+
+  transition: color 0.1s ease-in-out;
 `
 
 const overlay = {
@@ -107,6 +219,9 @@ const overlay = {
   },
   exit: {
     opacity: 0,
+    transition: {
+      delay: 0.5
+    }
   },
 }
 
@@ -128,5 +243,6 @@ const frame = {
   exit: {
     y: "-100vh",
     opacity: 0,
+    transition: {duration: 0.9, ease: "anticipate"}
   },
 }

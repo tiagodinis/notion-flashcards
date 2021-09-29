@@ -134,7 +134,7 @@ const setVariants = {
   show: data => ({
     opacity: 1,
     transition: {
-      delay: data.gridIndex * 0.05
+      delay: data.gridIndex * 0.06
     }
   })
 }

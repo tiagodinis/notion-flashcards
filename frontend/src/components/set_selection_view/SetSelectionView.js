@@ -6,7 +6,6 @@ import { GlobalStyle } from "../../GlobalStyle"
 import SearchBar from "./SearchBar"
 import Set from "./Set"
 import UpButton from "./UpButton"
-import SessionReport from "../set_session_view/SessionReport"
 
 export default function SetSelectionView() {
   const sets = useRef([])
@@ -38,17 +37,17 @@ export default function SetSelectionView() {
   }
 
   // Fetch and show set data
-  // useEffect(() => {
-  //   fetch("/api/sets")
-  //     .then(res => {
-  //       if (!res.ok) throw Error("Could not fetch data for that resource")
-  //       return res.json()
-  //     })
-  //     .then(data => {
-  //       sets.current = data
-  //       filterAndSort()
-  //     })
-  // }, [])
+  useEffect(() => {
+    fetch("/api/sets")
+      .then(res => {
+        if (!res.ok) throw Error("Could not fetch data for that resource")
+        return res.json()
+      })
+      .then(data => {
+        sets.current = data
+        filterAndSort()
+      })
+  }, [])
 
   // Update visible sets on search term or sort metric change
   useEffect(filterAndSort, [searchStr, sortMetric])
@@ -63,9 +62,7 @@ export default function SetSelectionView() {
     <>
       <GlobalStyle/>
 
-      <SessionReport/>
-
-      {/* <SearchBar
+      <SearchBar
         searchStr={searchStr}
         setSearchStr={newStr => setSearchStr(newStr)}
         sortMetric={sortMetric}
@@ -89,7 +86,7 @@ export default function SetSelectionView() {
         </AnimatePresence>
       </SetGrid>
 
-      <UpButton/> */}
+      <UpButton/>
     </>
   )
 }

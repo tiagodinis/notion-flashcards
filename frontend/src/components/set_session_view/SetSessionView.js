@@ -69,7 +69,7 @@ export default function SetSessionView() {
     }
   }
 
-  function redo() {
+  function resetSession() {
     flashcards.current.map(f => delete f.sessionResult)
     setShowable(getShowableCardsFromIndex(0))
     setProgress(0)
@@ -129,8 +129,8 @@ export default function SetSessionView() {
         </CardStack>
       }
 
-      <AnimatePresence initial={false}>
-        {resultModalOpen && <SessionReport redo={redo}/>}
+      <AnimatePresence initial={false} >
+        {resultModalOpen && <SessionReport retry={resetSession}/>}
       </AnimatePresence>
     </>
   )

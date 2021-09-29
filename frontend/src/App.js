@@ -12,9 +12,9 @@ export default function App() {
         </FadeContainer>
       </Route>
       <Route path="/">
-        {/* <FadeContainer> */}
+        <FadeContainer>
           <SetSelectionView/>
-        {/* </FadeContainer> */}
+        </FadeContainer>
       </Route>
     </Switch> 
   )
