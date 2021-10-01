@@ -13,8 +13,7 @@ export default function SessionHeader({ setName, setSize, onGoBack, progress }) 
   useEffect(() => {
     const controls = animate(startingWidth, progress * barMaxWidth, {
       type: "spring",
-      stiffness: 80,
-      onComplete: v => {}
+      stiffness: 80
     })
     return controls.stop
   }, [progress])

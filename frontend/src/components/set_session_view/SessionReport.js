@@ -1,46 +1,21 @@
 import { useHistory } from "react-router-dom"
 import styled from "styled-components"
 import { motion } from "framer-motion"
-import DisketteSVG from "../svg/DisketteSVG"
-
-import CancelSVG from "../svg/CancelSVG"
-import ArrowHead2SVG from "../svg/ArrowHead2SVG"
+import { useRef } from "react"
+import { ease, lerp } from "../../utilities/math"
 
 export default function SessionReport({setID, flashcards, retry}) {
   let history = useHistory()
-  const correct = 33
-  const incorrect = 7
-  const avgLvl = 0.72
+  const correctRef = useRef()
+  const incorrectRef = useRef()
+  const avglvlRef = useRef()
+  const updatedFlashcardExpirations = useRef()
 
   function handleSubmit() {
-    history.push("/")
-    return null
-
-    const updatedFlashcardExpirations = flashcards.map(f => {
-      let currentLvlMaxExpiration = 2 ** f.lvl
-      let remainingPercentage = f.expired_in / currentLvlMaxExpiration
-
-      if (f.sessionResult) {
-        if (remainingPercentage < 0.35) {
-          f.lvl++
-          // New expiration is interpolated (shorter the earlier it was answered)
-          f.expired_in = (2 ** f.lvl) * (1 - remainingPercentage) 
-        }
-        else f.expired_in = currentLvlMaxExpiration
-      }
-      else {
-        f.lvl--
-        if (f.lvl < 0) f.lvl = 0
-        f.expired_in = 0
-      }
-
-      return { id: f.id, lvl: f.lvl, expired_in: f.expired_in }
-    })
-
     const requestOptions = {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(updatedFlashcardExpirations)
+      body: JSON.stringify(updatedFlashcardExpirations.current)
     };
 
     fetch("/api/flashcards/" + setID, requestOptions)
@@ -50,9 +25,68 @@ export default function SessionReport({setID, flashcards, retry}) {
       })
       .then(data => {
         if (data.updateSuccess) history.push("/")
-        // TODO: if success change to sets
-        // data.updateSuccess
       })
+  }
+
+  function evalSession() {
+    let sessionResults = {correct: 0, incorrect: 0, avglvl: 0}
+
+    let clonedFlashcards = JSON.parse(JSON.stringify(flashcards)) // (!) JSON obj, it's ok
+
+    updatedFlashcardExpirations.current = clonedFlashcards.map(f => {
+      let currentLvlMaxExpiration = 2 ** f.lvl
+      let remainingPercentage = f.expired_in / currentLvlMaxExpiration
+
+      if (f.sessionResult) { // Correct
+        sessionResults.correct++
+        if (remainingPercentage < 0.33) { // Lvl up only possible with 2/3 of expiration elapsed
+          sessionResults.avglvl++
+          f.lvl++
+          // New expiration adjusted for anticipation
+          f.expired_in = (2 ** f.lvl) * (1 - remainingPercentage) 
+        }
+        else f.expired_in = currentLvlMaxExpiration
+      }
+      else { // Incorrect
+        sessionResults.incorrect++
+        sessionResults.avglvl--
+        f.lvl = Math.min(0, f.lvl - 1)
+        f.expired_in = 0
+      }
+
+      return { id: f.id, lvl: f.lvl, expired_in: f.expired_in }
+    })
+
+    sessionResults.avglvl /= clonedFlashcards.length
+
+    return sessionResults
+  }
+
+  function animateResultValue(obj, start, end, duration, show2Decimals) {
+    let startTimestamp = null
+
+    function step(timestamp) {
+      if (!startTimestamp) startTimestamp = timestamp
+
+      const elapsedTime = timestamp - startTimestamp
+      const elapsedPercentage = Math.min(elapsedTime / duration, 1)
+      const easedNewValue = lerp(ease(elapsedPercentage, 0.5, 0.5), start, end)
+      if (show2Decimals) obj.innerHTML = (Math.round(easedNewValue * 100) / 100).toFixed(2)
+      else obj.innerHTML = Math.floor(easedNewValue)
+      
+      if (elapsedPercentage < 1) window.requestAnimationFrame(step)
+    }
+
+    window.requestAnimationFrame(step);
+  }
+
+  function handleVisibleReport(variantName) {
+    if (variantName !== "visible") return
+    
+    const { correct, incorrect, avglvl} = evalSession()
+    animateResultValue(correctRef.current, 0, correct, 1500, false)
+    animateResultValue(incorrectRef.current, 0, incorrect, 1500, false)
+    setTimeout(() => animateResultValue(avglvlRef.current, 0, avglvl, 1300, true), 200)
   }
 
   return (
@@ -62,21 +96,21 @@ export default function SessionReport({setID, flashcards, retry}) {
       animate="visible"
       exit="exit"
     >
-      <Frame variants={frame}>
+      <Frame variants={frame} onAnimationComplete={handleVisibleReport}>
         <Title>Session results</Title>
         <SessionName>for <i>Botanical names: daily fruits</i></SessionName>
         <Details>
           <Row>
             <Label>Correct:</Label>
-            <Value>{correct}</Value>
+            <Value ref={correctRef}>0</Value>
           </Row>
           <Row>
             <Label>Incorrect:</Label>
-            <Value>{incorrect}</Value>
+            <Value ref={incorrectRef}>0</Value>
           </Row>
           <Row>
             <Label>Avg. lvl:</Label>
-            <Value>{avgLvl}</Value>
+            <Value ref={avglvlRef}>0</Value>
           </Row>
         </Details>
         <SaveBtn onClick={handleSubmit} whileHover={{y: -3}}>
@@ -103,8 +137,6 @@ const Overlay = styled(motion.div)`
 const Frame = styled(motion.div)`
   position: absolute;
   border-radius: 5px;
-  /* width: clamp(50%, 500px, 90%); */
-  /* height: min(90%, 500px); */
   width: 290px;
   height: 350px;
   margin: auto;
@@ -118,7 +150,6 @@ const Frame = styled(motion.div)`
 const Title = styled(motion.div)`
   font-size: 30px;
   text-align: center;
-  /* margin-top: 8px; */
   margin-top: 20px;
 `
 
@@ -129,10 +160,10 @@ const SessionName = styled(motion.div)`
 `
 
 const Details = styled(motion.div)`
-margin-top: 20px;
-display: flex;
-flex-direction: column;
-align-content: center;
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  align-content: center;
 `
 
 const Row = styled(motion.div)`

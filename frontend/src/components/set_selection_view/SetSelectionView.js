@@ -21,15 +21,30 @@ export default function SetSelectionView() {
     "Freshest": sets => sets.sort((b, a) => a.avg_expiration - b.avg_expiration),
   }
 
-  // Fetch and show set data (with server updating possibly uncached data)
+  // Fetch and show recached set data
   function refresh() {
     setRefreshing(true)
-    fetch("/api/syncedSets")
+    fetch("/api/recached-sets")
       .then(res => {
         if (!res.ok) throw Error("Could not fetch data for that resource")
         return res.json()
       })
       .then(data => {
+        sets.current = data
+        filterAndSort()
+        setRefreshing(false)
+      })
+  }
+
+  function resetDemo() {
+    setRefreshing(true)
+    fetch("/api/reset-demo")
+      .then(res => {
+        if (!res.ok) throw Error("Could not fetch data for that resource")
+        return res.json()
+      })
+      .then(data => {
+        console.log("asd")
         sets.current = data
         filterAndSort()
         setRefreshing(false)
@@ -73,7 +88,7 @@ export default function SetSelectionView() {
 
       <NotionOptions>
         <div onClick={refresh}>Refresh server data</div>
-        <div>Reset demo</div>
+        <div onClick={resetDemo}>Reset demo</div>
       </NotionOptions>
 
       <SetGrid>

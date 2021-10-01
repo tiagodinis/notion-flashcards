@@ -58,8 +58,7 @@ export default function SetSessionView() {
     const isAnswered = (acc, f) => acc + (f.sessionResult === undefined ? 0 : 1)
     const newProgress = flashcards.current.reduce(isAnswered, 0) / flashcards.current.length
     setProgress(newProgress)
-    // if (newProgress === 1) setResultModalOpen(true)
-    setResultModalOpen(true)
+    if (newProgress === 1) setResultModalOpen(true)
   }
 
   function skip() {
@@ -130,7 +129,9 @@ export default function SetSessionView() {
       }
 
       <AnimatePresence initial={false} >
-        {resultModalOpen && <SessionReport retry={resetSession}/>}
+        {resultModalOpen &&
+          <SessionReport setID={setID} flashcards={flashcards.current} retry={resetSession}/>
+        }
       </AnimatePresence>
     </>
   )
@@ -148,5 +149,3 @@ const CardStack = styled(motion.div)`
 
   display: flex;
 `
-
-// 890 - width / 890 - 320
