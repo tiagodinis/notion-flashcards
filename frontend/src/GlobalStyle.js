@@ -1,4 +1,4 @@
-import { createGlobalStyle, css } from "styled-components"
+import { createGlobalStyle, css } from "styled-components";
 
 export const GlobalStyle = createGlobalStyle`
   body {
@@ -7,11 +7,13 @@ export const GlobalStyle = createGlobalStyle`
     padding: 0;
     background-color: #f9f9f9;
 
-    ${props => props.hideScrollbar ? css`
-        -ms-overflow-style: none;
-        scrollbar-width: none;
-        overflow: hidden;
-      ` : ``
-    }
+    ${(props) =>
+      props.hideScrollbar
+        ? css`
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+            overflow: hidden;
+          `
+        : ``}
   }
-`
+`;
