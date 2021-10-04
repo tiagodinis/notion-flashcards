@@ -35,6 +35,7 @@ export default function SetSessionView() {
         setName.current = data.setName;
         setShowable(getShowableCardsFromIndex(0));
       });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Max 3 untested cards from given index forward (looping the array)
@@ -150,6 +151,7 @@ export default function SetSessionView() {
         {resultModalOpen && (
           <SessionReport
             setID={setID}
+            setName={setName.current}
             flashcards={flashcards.current}
             retry={resetSession}
           />

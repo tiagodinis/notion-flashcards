@@ -235,7 +235,6 @@ const Sorter = styled.div`
 
 const SortMetric = styled.div`
   color: #242337;
-  font-family: "Rubik", sans-serif;
   user-select: none;
 `;
 
@@ -260,8 +259,6 @@ const SortMenu = styled(motion.div)`
   left: ${(props) => props.sortMenuDims.left}px;
   width: ${(props) => props.sortMenuDims.width}px;
   z-index: 1;
-
-  font-family: "Rubik", sans-serif;
 
   border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 10px;

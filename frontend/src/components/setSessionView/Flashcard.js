@@ -122,6 +122,7 @@ export default function Flashcard(props) {
       unsubscribeX();
       unsubscribeY();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // (!) Combine drag and flip rotation transformation sequence (they use different defaults)
@@ -148,7 +149,6 @@ export default function Flashcard(props) {
   function handleDragEnd(event, info) {
     setIsRecovered(false);
     const xAnswerLimit = xOverlayLimit / dragElastic;
-    const yAnswerLimit = yOverlayLimit / dragElastic;
 
     const mValues = { x: x.get(), y: y.get() };
 
@@ -264,8 +264,6 @@ const FlashcardContainer = styled(motion.div)`
   height: calc(min(100vh - 160px, 660px));
   border-radius: 25px;
   background-color: ${(props) => props.color};
-
-  font-family: "Rubik", sans-serif;
 
   display: flex;
   flex-direction: column;

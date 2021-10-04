@@ -47,7 +47,6 @@ const FooterContainer = styled.div`
   position: absolute;
   bottom: 20px;
   left: calc(50% - 134px);
-  font-family: "Rubik", sans-serif;
   display: flex;
   justify-content: flex-start;
 

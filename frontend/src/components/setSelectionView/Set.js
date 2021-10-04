@@ -111,12 +111,10 @@ const OuterSet = styled(motion.div)`
   height: 150px;
 
   border-radius: 15px;
+  color: white;
 
   cursor: pointer;
   display: flex;
-
-  font-family: "Rubik", sans-serif;
-  color: white;
 `;
 
 const InnerSet = styled(motion.div)`

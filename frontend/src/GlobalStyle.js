@@ -6,6 +6,7 @@ export const GlobalStyle = createGlobalStyle`
     margin: 0;
     padding: 0;
     background-color: #f9f9f9;
+    font-family: "Rubik", sans-serif;
 
     ${(props) =>
       props.hideScrollbar

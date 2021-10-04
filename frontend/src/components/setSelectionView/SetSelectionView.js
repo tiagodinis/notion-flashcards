@@ -111,12 +111,7 @@ const NotionOptions = styled.div`
   display: flex;
   justify-content: center;
   font-size: 10px;
-  font-family: "Rubik", sans-serif;
   color: #797986;
-
-  div:first-child {
-    margin-right: 20px;
-  }
 
   div {
     cursor: pointer;
@@ -124,6 +119,10 @@ const NotionOptions = styled.div`
 
   div:hover {
     color: #494950;
+  }
+
+  div:first-child {
+    margin-right: 20px;
   }
 `;
 
