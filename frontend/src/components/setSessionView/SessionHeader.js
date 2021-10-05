@@ -5,12 +5,7 @@ import useWindowSize from "../../utilities/custom_hooks/useWindowSize";
 import ArrowHead2SVG from "../svg/ArrowHead2SVG";
 import QuestionsMarkSVG from "../svg/QuestionsMarkSVG";
 
-export default function SessionHeader({
-  setName,
-  setSize,
-  onGoBack,
-  progress,
-}) {
+export default function SessionHeader({ setName, setSize, onClick, progress }) {
   // const barBackgroundWidth = window.innerWidth > 940 ? 160 : 100;
   const [barBackgroundWidth, setBarBackgroundWidth] = useState(
     computeBarBackgroundWidth()
@@ -41,7 +36,7 @@ export default function SessionHeader({
   return (
     <SessionHeaderContainer>
       <GoBackArrow
-        onClick={onGoBack}
+        onClick={onClick}
         initial={{ rotate: -90 }}
         whileHover={{ x: -3 }}
       >

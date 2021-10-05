@@ -4,8 +4,8 @@ import SetSessionView from "./components/setSessionView/SetSessionView";
 import SetSelectionView from "./components/setSelectionView/SetSelectionView";
 
 // (!) Using FadeContainer instead of AnimatePresence
-// AnimatePresence needs to always exist while its *direct descendants* are dependent on some state
-// But, if Route is its parent, then AnimatePresence would be dependent on the current route
+// AnimatePresence needs to be mounted while its *direct descendants* are dependent on some state
+// But, if Route is its parent, AnimatePresence would mount based on the current route
 // And it can't go up the tree, as it would stop being the *direct parent* of motion children
 
 export default function App() {

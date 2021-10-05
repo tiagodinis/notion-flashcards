@@ -220,11 +220,11 @@ export default function Flashcard(props) {
           onMouseDown={() => setIsDraggingScroller(true)}
           onMouseUp={() => setTimeout(() => setIsDraggingScroller(false), 1)}
         >
-          <Test onMouseDown={(e) => e.stopPropagation()}>
-            <InnerContent ref={frontInnerContentEl} fontSize={frontFontSize}>
+          <ContentContainer onMouseDown={(e) => e.stopPropagation()}>
+            <Content ref={frontInnerContentEl} fontSize={frontFontSize}>
               {props.cardData.front.replaceAll("\\n", "\n")}
-            </InnerContent>
-          </Test>
+            </Content>
+          </ContentContainer>
         </CustomScroller>
       </Side>
       <Side initial={{ rotateY: 180 }} isFlipped={props.isFlipped}>
@@ -235,11 +235,11 @@ export default function Flashcard(props) {
             onMouseDown={() => setIsDraggingScroller(true)}
             onMouseUp={() => setTimeout(() => setIsDraggingScroller(false), 1)}
           >
-            <Test onMouseDown={(e) => e.stopPropagation()}>
-              <InnerContent ref={backInnerContentEl} fontSize={backFontSize}>
+            <ContentContainer onMouseDown={(e) => e.stopPropagation()}>
+              <Content ref={backInnerContentEl} fontSize={backFontSize}>
                 {props.cardData.back.replaceAll("\\n", "\n")}
-              </InnerContent>
-            </Test>
+              </Content>
+            </ContentContainer>
           </CustomScroller>
         )}
       </Side>
@@ -288,7 +288,7 @@ const Side = styled(motion.div)`
   height: calc(min(100vh - 210px, 610px));
 `;
 
-const InnerContent = styled(motion.div)`
+const Content = styled.div`
   height: fit-content;
   width: fit-content;
   white-space: pre-wrap;
@@ -297,7 +297,7 @@ const InnerContent = styled(motion.div)`
   text-align: ${(props) => (props.fontSize === 16 ? "left" : "center")};
 `;
 
-const Test = styled.div`
+const ContentContainer = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
@@ -331,7 +331,7 @@ const OverlayContentOuter = styled(motion.div)`
   pointer-events: none; /* (!) Avoid capturing events */
 `;
 
-const OverlayContentInner = styled(motion.div)`
+const OverlayContentInner = styled.div`
   padding: 0 16px;
   border-radius: 50px;
   color: ${(props) =>

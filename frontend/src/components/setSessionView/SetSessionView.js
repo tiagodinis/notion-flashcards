@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useContext } from "react";
 import { useParams } from "react-router-dom";
 import { FadeContext } from "../../utilities/components/FadeContainer";
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence } from "framer-motion";
 import { getPercentage, lerp } from "../../utilities/math";
 import { GlobalStyle } from "../../GlobalStyle";
 import styled from "styled-components";
@@ -86,7 +86,7 @@ export default function SetSessionView() {
         <SessionHeader
           setName={setName.current}
           setSize={flashcards.current.length}
-          onGoBack={() => startFade("/")}
+          onClick={() => startFade("/")}
           progress={progress}
         />
       )}
@@ -163,7 +163,7 @@ export default function SetSessionView() {
   );
 }
 
-const CardStack = styled(motion.div)`
+const CardStack = styled.div`
   @media (min-height: 820px) {
     top: calc(100px + (100vh - 820px) * 0.4);
   }

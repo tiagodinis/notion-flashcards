@@ -117,7 +117,7 @@ const OuterSet = styled(motion.div)`
   display: flex;
 `;
 
-const InnerSet = styled(motion.div)`
+const InnerSet = styled.div`
   @media (min-width: 1140px) {
     width: 290px;
     height: 158px;
@@ -131,7 +131,7 @@ const InnerSet = styled(motion.div)`
   flex-direction: column;
 `;
 
-const SetDetails = styled(motion.div)`
+const SetDetails = styled.div`
   @media (min-width: 1140px) {
     font-size: 16px;
   }
@@ -143,7 +143,7 @@ const SetDetails = styled(motion.div)`
   opacity: ${(props) => (props.hovered ? 0.65 : 0.5)};
 `;
 
-const ExpirationContainer = styled(motion.div)`
+const ExpirationContainer = styled.div`
   display: flex;
 
   div {
@@ -151,7 +151,7 @@ const ExpirationContainer = styled(motion.div)`
   }
 `;
 
-const SetTitle = styled(motion.div)`
+const SetTitle = styled.div`
   @media (min-width: 1140px) {
     font-size: 37px;
   }

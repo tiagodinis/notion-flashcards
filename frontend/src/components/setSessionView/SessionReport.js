@@ -1,12 +1,13 @@
-import { useHistory } from "react-router-dom";
 import styled from "styled-components";
 import { motion, useAnimation } from "framer-motion";
-import { useRef, useState } from "react";
+import { useRef, useState, useContext } from "react";
 import { lerp } from "../../utilities/math";
 import ArrowHead1SVG from "../svg/ArrowHead1SVG";
+import SessionReportButtons from "./SessionReportButtons";
+import { FadeContext } from "../../utilities/components/FadeContainer";
 
 export default function SessionReport({ setID, setName, flashcards, retry }) {
-  let history = useHistory();
+  const startFade = useContext(FadeContext);
   const correctRef = useRef();
   const incorrectRef = useRef();
   const avglvlRef = useRef();
@@ -47,17 +48,15 @@ export default function SessionReport({ setID, setName, flashcards, retry }) {
       let remainingPercentage = f.expired_in / currentLvlMaxExpiration;
 
       if (f.sessionResult) {
-        // Correct
         sessionResults.correct++;
         if (remainingPercentage < 0.33) {
           // Lvl up only possible with 2/3 of expiration elapsed
           sessionResults.avgLvl++;
           f.lvl++;
-          // New expiration adjusted for anticipation
+          // New expiration adjusted for answer anticipation
           f.expired_in = 2 ** f.lvl * (1 - remainingPercentage);
         } else f.expired_in = currentLvlMaxExpiration;
       } else {
-        // Incorrect
         sessionResults.incorrect++;
         sessionResults.avgLvl--;
         f.lvl = f.lvl > 0 ? f.lvl - 1 : 0;
@@ -101,7 +100,7 @@ export default function SessionReport({ setID, setName, flashcards, retry }) {
     });
   }
 
-  function handleSubmit() {
+  function saveResults() {
     const requestOptions = {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
@@ -114,7 +113,7 @@ export default function SessionReport({ setID, setName, flashcards, retry }) {
         return res.json();
       })
       .then((data) => {
-        if (data.updateSuccess) history.push("/");
+        if (data.updateSuccess) startFade("/");
       });
   }
 
@@ -209,14 +208,11 @@ export default function SessionReport({ setID, setName, flashcards, retry }) {
             </AvgValueContainer>
           </Row>
         </Details>
-        <SaveBtn
-          onClick={handleSubmit}
-          whileHover={{ y: -3 }}
+        <SessionReportButtons
+          saveCallback={saveResults}
+          retryCallback={retry}
           singleArrow={singleArrow}
-        >
-          <SaveBtnContent>Save Results</SaveBtnContent>
-        </SaveBtn>
-        <RetryBtn onClick={retry}>retry session</RetryBtn>
+        />
       </Frame>
     </Overlay>
   );
@@ -245,32 +241,32 @@ const Frame = styled(motion.div)`
   z-index: 1000;
 `;
 
-const Title = styled(motion.div)`
+const Title = styled.div`
   font-size: 30px;
   text-align: center;
   margin-top: 20px;
 `;
 
-const SessionName = styled(motion.div)`
+const SessionName = styled.div`
   text-align: center;
   font-size: 14px;
   color: grey;
 `;
 
-const Details = styled(motion.div)`
+const Details = styled.div`
   margin-top: 20px;
   display: flex;
   flex-direction: column;
   align-content: center;
 `;
 
-const Row = styled(motion.div)`
+const Row = styled.div`
   display: flex;
   justify-content: center;
   align-items: flex-end;
 `;
 
-const Label = styled(motion.div)`
+const Label = styled.div`
   width: 100%;
   height: fit-content;
   margin-bottom: 5px;
@@ -278,7 +274,7 @@ const Label = styled(motion.div)`
   text-align: right;
 `;
 
-const Value = styled(motion.div)`
+const Value = styled.div`
   width: 100%;
   font-size: 32px;
 `;
@@ -289,55 +285,6 @@ const AvgValueLabel = styled(Label)`
 
 const AvgValueContainer = styled(Value)`
   display: flex;
-`;
-
-const SaveBtn = styled(motion.div)`
-  background-color: hsl(0 0% 24%);
-
-  width: 200px;
-  height: 60px;
-  margin: auto;
-  margin-top: ${(props) => (props.singleArrow ? 20 : 23)}px;
-
-  border-radius: 10px;
-  box-shadow: 2px 4px 8px hsl(0 0% 20% / 0.4), 4px 8px 16px hsl(0 0% 20% / 0.4);
-
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-  &:hover {
-    background-color: hsl(0 0% 20%);
-    box-shadow: 4px 8px 16px hsl(0 0% 20% / 0.4),
-      6px 12px 24px hsl(0 0% 20% / 0.4);
-
-    cursor: pointer;
-  }
-
-  transition: background-color 0.1s ease-in-out, box-shadow 0.1s ease-in-out;
-`;
-
-const SaveBtnContent = styled(motion.div)`
-  position: relative;
-  bottom: 1px;
-  font-size: 24px;
-  color: white;
-`;
-
-const RetryBtn = styled(motion.div)`
-  font-size: 14px;
-  width: fit-content;
-  margin: auto;
-  margin-top: 19px;
-
-  color: #797986;
-
-  &:hover {
-    color: #494950;
-    cursor: pointer;
-  }
-
-  transition: color 0.1s ease-in-out;
 `;
 
 const SelectArrowContainer = styled(motion.div)`
