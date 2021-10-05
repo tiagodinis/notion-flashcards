@@ -34,7 +34,7 @@ export default function SessionReport({ setID, setName, flashcards, retry }) {
       setSingleArrow(Math.abs(avgLvl) < 0.5);
       setAvglvlArrowUp(avgLvl > 0);
       avgLvlArrowsControls.set({ opacity: 0, y: avgLvl >= 0 ? 50 : -50 });
-      setTimeout(playAvgLvlArrowsAnim, 1450);
+      setTimeout(playAvgLvlArrowsAnim, 1500);
     }
   }
 
