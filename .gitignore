@@ -10,8 +10,15 @@ bower_components
 # production
 /build
 
+# vscode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+
 # misc
-.vscode
 .DS_Store
 .env
 .env.local
