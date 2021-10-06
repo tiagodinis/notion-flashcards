@@ -1,11 +1,11 @@
 {
   "name": "notion-flashcards",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
-    "dev": "nodemon server.js",
-    "frontend": "cd frontend && npm start",
-    "start": "concurrently \"npm run dev\" \"npm run frontend\""
+    "dev": "concurrently \"nodemon server.js\" \"npm start --prefix client\"",
+    "start": "node server.js",
+    "heroku-postbuild": "npm i --prefix client && npm run build --prefix client"
   },
   "keywords": [],
   "author": "",
@@ -13,13 +13,12 @@
   "description": "",
   "dependencies": {
     "@notionhq/client": "^0.2.4",
-    "concurrently": "^6.2.1",
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
-    "nodemon": "^2.0.12",
-    "react-router-dom": "^5.2.0"
+    "nodemon": "^2.0.12"
   },
   "devDependencies": {
+    "concurrently": "^6.3.0",
     "prettier": "^2.4.1"
   }
 }

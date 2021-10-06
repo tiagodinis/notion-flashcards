@@ -1,5 +1,5 @@
 # dependencies
-/node_modules
+**/node_modules
 /.pnp
 .pnp.js
 bower_components
@@ -34,3 +34,6 @@ notes.txt
 psd
 thumb
 sketch
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
