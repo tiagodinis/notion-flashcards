@@ -13,7 +13,7 @@ export default function SetSelectionView() {
   const [searchStr, setSearchStr] = useState("");
   const [sortMetric, setSortMetric] = useState("A-Z");
   const [isRefreshing, setRefreshing] = useState(false);
-  const startFade = useContext(FadeContext);
+  const { startFade, setFadeOpacityTarget } = useContext(FadeContext);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => fetchSets("/api/sets", false), []);
@@ -32,6 +32,7 @@ export default function SetSelectionView() {
         sets.current = data;
         filterAndSort();
         if (useAnim) setRefreshing(false);
+        setFadeOpacityTarget(1);
       });
   }
 

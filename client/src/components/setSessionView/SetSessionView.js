@@ -20,7 +20,7 @@ export default function SetSessionView() {
   const [isFlipped, setIsFlipped] = useState(false);
   const [resultModalOpen, setResultModalOpen] = useState(false);
   let { setID } = useParams();
-  const startFade = useContext(FadeContext);
+  const { startFade, setFadeOpacityTarget } = useContext(FadeContext);
   const { width, height } = useWindowSize();
 
   // Fetch and show session data
@@ -34,6 +34,7 @@ export default function SetSessionView() {
         flashcards.current = data.flashcards;
         setName.current = data.setName;
         setShowable(getShowableCardsFromIndex(0));
+        setFadeOpacityTarget(1);
       });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

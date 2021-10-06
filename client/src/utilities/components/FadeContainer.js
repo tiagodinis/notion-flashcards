@@ -5,28 +5,23 @@ import { motion } from "framer-motion";
 export const FadeContext = createContext();
 
 export default function FadeContainer({ children }) {
-  const [opacityTarget, setOpacityTarget] = useState(1);
+  const [fadeOpacityTarget, setFadeOpacityTarget] = useState(1);
   const targetPath = useRef("/");
   const history = useHistory();
 
   function startFade(newPath) {
     targetPath.current = newPath;
-    setOpacityTarget(0);
-  }
-
-  function onFadeOutComplete() {
-    if (opacityTarget === 0) {
-      history.push(targetPath.current);
-      setOpacityTarget(1);
-    }
+    setFadeOpacityTarget(0);
   }
 
   return (
-    <FadeContext.Provider value={startFade}>
+    <FadeContext.Provider value={{ startFade, setFadeOpacityTarget }}>
       <motion.div
         initial={{ opacity: 0 }}
-        animate={{ opacity: opacityTarget }}
-        onAnimationComplete={onFadeOutComplete}
+        animate={{ opacity: fadeOpacityTarget }}
+        onAnimationComplete={() => {
+          if (fadeOpacityTarget === 0) history.push(targetPath.current);
+        }}
       >
         {children}
       </motion.div>
