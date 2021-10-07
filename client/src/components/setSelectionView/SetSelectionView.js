@@ -74,23 +74,25 @@ export default function SetSelectionView() {
       {error && <ErrorAlert error={error} />}
       {!error && (
         <>
-          <SearchBar
-            searchStr={searchStr}
-            setSearchStr={(newStr) => setSearchStr(newStr)}
-            sortMetric={sortMetric}
-            setSortMetric={(newSortMetric) => setSortMetric(newSortMetric)}
-            sortMetricList={Object.keys(sortMap)}
-            isRefreshing={isRefreshing}
-          />
+          <header>
+            <SearchBar
+              searchStr={searchStr}
+              setSearchStr={(newStr) => setSearchStr(newStr)}
+              sortMetric={sortMetric}
+              setSortMetric={(newSortMetric) => setSortMetric(newSortMetric)}
+              sortMetricList={Object.keys(sortMap)}
+              isRefreshing={isRefreshing}
+            />
 
-          <NotionOptions>
-            <div onClick={() => fetchSets("api/recached-sets", true)}>
-              Refresh server data
-            </div>
-            <div onClick={() => fetchSets("api/reset-demo", true)}>
-              Reset demo
-            </div>
-          </NotionOptions>
+            <NotionOptions>
+              <div onClick={() => fetchSets("api/recached-sets", true)}>
+                Refresh server data
+              </div>
+              <div onClick={() => fetchSets("api/reset-demo", true)}>
+                Reset demo
+              </div>
+            </NotionOptions>
+          </header>
 
           <SetGrid>
             <AnimatePresence>
@@ -128,10 +130,10 @@ const NotionOptions = styled.div`
   display: flex;
   justify-content: center;
   font-size: 10px;
-  color: #797986;
 
   div {
     cursor: pointer;
+    color: #797986;
   }
 
   div:hover {
@@ -143,7 +145,7 @@ const NotionOptions = styled.div`
   }
 `;
 
-const SetGrid = styled.div`
+const SetGrid = styled.main`
   @media (min-width: 630px) {
     width: calc(var(--item-width) * 2 + var(--grid-gap) * 1);
   }

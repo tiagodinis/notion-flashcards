@@ -15,20 +15,20 @@ export default function UpButton() {
   return (
     <AnimatePresence>
       {visibleUpButton && (
-        <UpButtonContainer
+        <Button
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
         >
           <ArrowHead2SVG dim="24" color="rgba(255, 255, 255, 0.75)" />
-        </UpButtonContainer>
+        </Button>
       )}
     </AnimatePresence>
   );
 }
 
-const UpButtonContainer = styled(motion.div)`
+const Button = styled(motion.button)`
   @media (min-width: 1140px) {
     right: 25px;
     bottom: 20px;
@@ -40,6 +40,7 @@ const UpButtonContainer = styled(motion.div)`
   bottom: 10px;
   padding: 10px;
 
+  border: none;
   border-radius: 200px;
   background-color: rgba(120, 120, 120, 0.5);
 

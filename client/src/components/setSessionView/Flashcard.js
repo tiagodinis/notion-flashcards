@@ -258,7 +258,7 @@ export default function Flashcard(props) {
   );
 }
 
-const FlashcardContainer = styled(motion.div)`
+const FlashcardContainer = styled(motion.article)`
   position: absolute;
   width: calc(min(100vw - 30px, 460px));
   height: calc(min(100vh - 160px, 660px));
@@ -288,19 +288,19 @@ const Side = styled(motion.div)`
   height: calc(min(100vh - 210px, 610px));
 `;
 
-const Content = styled.div`
+const ContentContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+const Content = styled.section`
   height: fit-content;
   width: fit-content;
   white-space: pre-wrap;
 
   font-size: ${(props) => props.fontSize}px;
   text-align: ${(props) => (props.fontSize === 16 ? "left" : "center")};
-`;
-
-const ContentContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
 `;
 
 const Overlay = styled(motion.div)`

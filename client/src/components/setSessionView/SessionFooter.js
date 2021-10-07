@@ -12,7 +12,7 @@ export default function SessionFooter(props) {
   useEffect(() => setIsBigScreen(width > 499 && height > 899), [width, height]);
 
   return (
-    <FooterContainer>
+    <Footer>
       <IconLabelPair>
         <RotateSVG dim={isBigScreen ? 40 : 30} color="rgb(158, 158, 167)" />
         <div>{props.isFlipped ? "Back" : "Front"}</div>
@@ -31,11 +31,11 @@ export default function SessionFooter(props) {
         />
         <div>Lvl. {props.cardData.lvl}</div>
       </IconLabelPair>
-    </FooterContainer>
+    </Footer>
   );
 }
 
-const FooterContainer = styled.div`
+const Footer = styled.footer`
   @media (min-width: 500px) and (min-height: 900px) {
     width: 545px;
     left: 0;

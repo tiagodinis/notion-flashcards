@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import styled from "styled-components";
 import useWindowSize from "../../utilities/custom_hooks/useWindowSize";
 import ArrowHead2SVG from "../svg/ArrowHead2SVG";
-import QuestionsMarkSVG from "../svg/QuestionsMarkSVG";
+// import QuestionsMarkSVG from "../svg/QuestionsMarkSVG";
 
 export default function SessionHeader({ setName, setSize, onClick, progress }) {
   // const barBackgroundWidth = window.innerWidth > 940 ? 160 : 100;
@@ -34,7 +34,7 @@ export default function SessionHeader({ setName, setSize, onClick, progress }) {
   }, [progress, width]);
 
   return (
-    <SessionHeaderContainer>
+    <Header>
       <GoBackArrow
         onClick={onClick}
         initial={{ rotate: -90 }}
@@ -54,14 +54,14 @@ export default function SessionHeader({ setName, setSize, onClick, progress }) {
         </ProgressContainer>
       </HeaderDataContainer>
 
-      <QuestionMark whileHover={{ rotate: 10, scale: 1.2 }}>
+      {/* <QuestionMark whileHover={{ rotate: 10, scale: 1.2 }}>
         <QuestionsMarkSVG dim="18" color="rgb(158, 158, 167)" />
-      </QuestionMark>
-    </SessionHeaderContainer>
+      </QuestionMark> */}
+    </Header>
   );
 }
 
-const SessionHeaderContainer = styled.div`
+const Header = styled.header`
   height: 100px;
   margin: 0px 15px;
   display: flex;
@@ -69,7 +69,7 @@ const SessionHeaderContainer = styled.div`
   align-items: center;
 `;
 
-const GoBackArrow = styled(motion.div)`
+const GoBackArrow = styled(motion.nav)`
   padding: 10px;
   cursor: pointer;
 `;
@@ -126,7 +126,7 @@ const ProgressBar = styled(motion.div)`
   }
 `;
 
-const QuestionMark = styled(motion.div)`
-  padding: 10px;
-  cursor: pointer;
-`;
+// const QuestionMark = styled(motion.div)`
+//   padding: 10px;
+//   cursor: pointer;
+// `;

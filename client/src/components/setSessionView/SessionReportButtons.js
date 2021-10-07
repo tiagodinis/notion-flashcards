@@ -41,7 +41,7 @@ export default function SessionReportButtons({
   }
 
   return (
-    <>
+    <nav>
       <SaveBtn
         singleArrow={singleArrow}
         onClick={handleSubmit}
@@ -61,7 +61,7 @@ export default function SessionReportButtons({
       <RetryBtn onClick={retryCallback} animate={retryBtnControls}>
         retry session
       </RetryBtn>
-    </>
+    </nav>
   );
 }
 
@@ -189,7 +189,7 @@ const TextEntry = styled.div`
 
 const Letter = styled(motion.span)`
   display: inline-block;
-  /* (!) TODO: figure out why I need this to stop DripLine reset on SessionReport startFade */
+  /* (!) TODO: figure out why I need this to stop a DripLine reset on SessionReport startFade */
   transform: ${(props) =>
     props.dripFinished ? "translateY(100%)" : "translateY(0%)"};
 `;

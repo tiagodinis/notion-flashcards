@@ -173,7 +173,7 @@ export default function SetSessionView() {
   );
 }
 
-const CardStack = styled.div`
+const CardStack = styled.main`
   @media (min-height: 820px) {
     top: calc(100px + (100vh - 820px) * 0.4);
   }
