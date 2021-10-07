@@ -1,11 +1,12 @@
 import { useState, useEffect, useRef, useContext } from "react";
 import { FadeContext } from "../../utilities/components/FadeContainer";
 import { AnimatePresence } from "framer-motion";
-import { GlobalStyle } from "../../GlobalStyle";
 import styled from "styled-components";
 import SearchBar from "./SearchBar";
 import Set from "./Set";
 import UpButton from "./UpButton";
+import ErrorAlert from "../../utilities/components/ErrorAlert";
+import { GlobalStyle } from "../../GlobalStyle";
 
 export default function SetSelectionView() {
   const sets = useRef([]);
@@ -13,27 +14,36 @@ export default function SetSelectionView() {
   const [searchStr, setSearchStr] = useState("");
   const [sortMetric, setSortMetric] = useState("A-Z");
   const [isRefreshing, setRefreshing] = useState(false);
+  const [error, setError] = useState("");
   const { startFade, setFadeOpacityTarget } = useContext(FadeContext);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => fetchSets("/api/sets", false), []);
+  useEffect(() => fetchSets("api/sets", false), []);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(filterAndSort, [searchStr, sortMetric]);
 
   function fetchSets(path, useAnim) {
-    if (useAnim) setRefreshing(true);
-    fetch(path)
-      .then((res) => {
-        if (!res.ok) throw Error("Could not fetch data for that resource");
-        return res.json();
-      })
-      .then((data) => {
-        sets.current = data;
-        filterAndSort();
-        if (useAnim) setRefreshing(false);
-        setFadeOpacityTarget(1);
-      });
+    function onError(err) {
+      if (useAnim) setRefreshing(false);
+      setError(err);
+    }
+
+    (async () => {
+      if (useAnim) setRefreshing(true);
+      let response;
+      try {
+        response = await fetch(path);
+      } catch (err) {
+        return onError(err);
+      }
+      if (!response.ok) return onError(response);
+
+      sets.current = await response.json();
+      filterAndSort();
+      if (useAnim) setRefreshing(false);
+      setFadeOpacityTarget(1);
+    })();
   }
 
   function filterAndSort() {
@@ -61,37 +71,43 @@ export default function SetSelectionView() {
   return (
     <>
       <GlobalStyle />
+      {error && <ErrorAlert error={error} />}
+      {!error && (
+        <>
+          <SearchBar
+            searchStr={searchStr}
+            setSearchStr={(newStr) => setSearchStr(newStr)}
+            sortMetric={sortMetric}
+            setSortMetric={(newSortMetric) => setSortMetric(newSortMetric)}
+            sortMetricList={Object.keys(sortMap)}
+            isRefreshing={isRefreshing}
+          />
 
-      <SearchBar
-        searchStr={searchStr}
-        setSearchStr={(newStr) => setSearchStr(newStr)}
-        sortMetric={sortMetric}
-        setSortMetric={(newSortMetric) => setSortMetric(newSortMetric)}
-        sortMetricList={Object.keys(sortMap)}
-        isRefreshing={isRefreshing}
-      />
+          <NotionOptions>
+            <div onClick={() => fetchSets("api/recached-sets", true)}>
+              Refresh server data
+            </div>
+            <div onClick={() => fetchSets("api/reset-demo", true)}>
+              Reset demo
+            </div>
+          </NotionOptions>
 
-      <NotionOptions>
-        <div onClick={() => fetchSets("api/recached-sets", true)}>
-          Refresh server data
-        </div>
-        <div onClick={() => fetchSets("api/reset-demo", true)}>Reset demo</div>
-      </NotionOptions>
+          <SetGrid>
+            <AnimatePresence>
+              {visibleSets.map((s, i) => (
+                <Set
+                  key={s.id}
+                  set={s}
+                  gridIndex={i}
+                  onSetSelected={() => startFade("flashcards/" + s.id)}
+                />
+              ))}
+            </AnimatePresence>
+          </SetGrid>
 
-      <SetGrid>
-        <AnimatePresence>
-          {visibleSets.map((s, i) => (
-            <Set
-              key={s.id}
-              set={s}
-              gridIndex={i}
-              onSetSelected={() => startFade("flashcards/" + s.id)}
-            />
-          ))}
-        </AnimatePresence>
-      </SetGrid>
-
-      <UpButton />
+          <UpButton />
+        </>
+      )}
     </>
   );
 }

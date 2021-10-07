@@ -10,6 +10,7 @@ import Flashcard from "./Flashcard";
 import SessionFooter from "./SessionFooter";
 import SessionReport from "./SessionReport";
 import useWindowSize from "../../utilities/custom_hooks/useWindowSize";
+import ErrorAlert from "../../utilities/components/ErrorAlert";
 
 export default function SetSessionView() {
   const flashcards = useRef([]);
@@ -20,24 +21,28 @@ export default function SetSessionView() {
   const [isFlipped, setIsFlipped] = useState(false);
   const [resultModalOpen, setResultModalOpen] = useState(false);
   let { setID } = useParams();
+  const [error, setError] = useState("");
   const { startFade, setFadeOpacityTarget } = useContext(FadeContext);
   const { width, height } = useWindowSize();
 
-  // Fetch and show session data
-  useEffect(() => {
-    fetch("/api/flashcards/" + setID)
-      .then((res) => {
-        if (!res.ok) throw Error("Could not fetch data for that resource");
-        return res.json();
-      })
-      .then((data) => {
-        flashcards.current = data.flashcards;
-        setName.current = data.setName;
-        setShowable(getShowableCardsFromIndex(0));
-        setFadeOpacityTarget(1);
-      });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  async function fetchSessionData() {
+    let response;
+    try {
+      response = await fetch("/api/flashcards/" + setID);
+    } catch (err) {
+      return setError(err);
+    }
+    if (!response.ok) return setError(response);
+
+    const data = await response.json();
+    flashcards.current = data.flashcards;
+    setName.current = data.setName;
+    setShowable(getShowableCardsFromIndex(0));
+    setFadeOpacityTarget(1);
+  }
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => fetchSessionData(), []);
 
   // Max 3 untested cards from given index forward (looping the array)
   function getShowableCardsFromIndex(from) {
@@ -83,83 +88,87 @@ export default function SetSessionView() {
     <>
       <GlobalStyle hideScrollbar />
 
-      {setName && (
-        <SessionHeader
-          setName={setName.current}
-          setSize={flashcards.current.length}
-          onClick={() => startFade("/")}
-          progress={progress}
-        />
-      )}
+      {error && <ErrorAlert error={error} />}
 
-      {showable && showable.length > 0 && (
-        <SessionFooter
-          cardData={flashcards.current[showable[0]]}
-          isFlipped={isFlipped}
-        />
-      )}
+      {!error && (
+        <>
+          {setName && (
+            <SessionHeader
+              setName={setName.current}
+              setSize={flashcards.current.length}
+              onClick={() => startFade("/")}
+              progress={progress}
+            />
+          )}
 
-      {showable !== null && (
-        <CardStack>
-          <AnimatePresence>
-            {showable.length > 2 && (
-              <Flashcard
-                key={showable[2]}
-                pos={2}
-                cardData={flashcards.current[showable[2]]}
-                initial={false}
-                animate={{
-                  scale: 0.9,
-                  x: lerp(getPercentage(width, 320, 490), 28, 39),
-                }}
-              />
-            )}
-            {showable.length > 1 && (
-              <Flashcard
-                key={showable[1]}
-                pos={1}
-                cardData={flashcards.current[showable[1]]}
-                initial={false}
-                animate={{
-                  scale: 0.96,
-                  x: lerp(getPercentage(width, 320, 490), 12, 17),
-                }}
-              />
-            )}
-            {showable.length > 0 && (
-              <Flashcard
-                key={showable[0]}
-                pos={0}
-                cardData={flashcards.current[showable[0]]}
-                exitX={exitX}
-                setExitX={setExitX}
-                skip={skip}
-                setCardResult={setCardResult}
-                animate={{ scale: 1, x: 0 }}
-                drag
-                canFlip
-                width={width}
-                height={height}
-                isFlipped={isFlipped}
-                setIsFlipped={(newFlipState) => setIsFlipped(newFlipState)}
+          {showable && showable.length > 0 && (
+            <SessionFooter
+              cardData={flashcards.current[showable[0]]}
+              isFlipped={isFlipped}
+            />
+          )}
+
+          {showable !== null && (
+            <CardStack>
+              <AnimatePresence>
+                {showable.length > 2 && (
+                  <Flashcard
+                    key={showable[2]}
+                    pos={2}
+                    cardData={flashcards.current[showable[2]]}
+                    initial={false}
+                    animate={{
+                      scale: 0.9,
+                      x: lerp(getPercentage(width, 320, 490), 28, 39),
+                    }}
+                  />
+                )}
+                {showable.length > 1 && (
+                  <Flashcard
+                    key={showable[1]}
+                    pos={1}
+                    cardData={flashcards.current[showable[1]]}
+                    initial={false}
+                    animate={{
+                      scale: 0.96,
+                      x: lerp(getPercentage(width, 320, 490), 12, 17),
+                    }}
+                  />
+                )}
+                {showable.length > 0 && (
+                  <Flashcard
+                    key={showable[0]}
+                    pos={0}
+                    cardData={flashcards.current[showable[0]]}
+                    exitX={exitX}
+                    setExitX={setExitX}
+                    skip={skip}
+                    setCardResult={setCardResult}
+                    animate={{ scale: 1, x: 0 }}
+                    drag
+                    canFlip
+                    width={width}
+                    height={height}
+                    isFlipped={isFlipped}
+                    setIsFlipped={(newFlipState) => setIsFlipped(newFlipState)}
+                  />
+                )}
+              </AnimatePresence>
+            </CardStack>
+          )}
+
+          <AnimatePresence initial={false}>
+            {resultModalOpen && (
+              <SessionReport
+                setID={setID}
+                setName={setName.current}
+                flashcards={flashcards.current}
+                retry={resetSession}
               />
             )}
           </AnimatePresence>
-        </CardStack>
+        </>
       )}
-
-      <AnimatePresence initial={false}>
-        {resultModalOpen && (
-          <SessionReport
-            setID={setID}
-            setName={setName.current}
-            flashcards={flashcards.current}
-            retry={resetSession}
-          />
-        )}
-      </AnimatePresence>
-
-      {/* TODO: help modal */}
     </>
   );
 }

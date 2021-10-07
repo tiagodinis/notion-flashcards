@@ -5,9 +5,10 @@ import { lerp } from "../../utilities/math";
 import ArrowHead1SVG from "../svg/ArrowHead1SVG";
 import SessionReportButtons from "./SessionReportButtons";
 import { FadeContext } from "../../utilities/components/FadeContainer";
+import ErrorAlert from "../../utilities/components/ErrorAlert";
 
 export default function SessionReport({ setID, setName, flashcards, retry }) {
-  const startFade = useContext(FadeContext);
+  const { startFade } = useContext(FadeContext);
   const correctRef = useRef();
   const incorrectRef = useRef();
   const avglvlRef = useRef();
@@ -15,6 +16,7 @@ export default function SessionReport({ setID, setName, flashcards, retry }) {
   const [singleArrow, setSingleArrow] = useState(false);
   const updatedFlashcardExpirations = useRef();
   const avgLvlArrowsControls = useAnimation();
+  const [error, setError] = useState("");
 
   function handleVisibleReport(variantName) {
     if (variantName !== "visible") return;
@@ -100,21 +102,23 @@ export default function SessionReport({ setID, setName, flashcards, retry }) {
     });
   }
 
-  function saveResults() {
+  async function saveResults() {
     const requestOptions = {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(updatedFlashcardExpirations.current),
     };
 
-    fetch("/api/flashcards/" + setID, requestOptions)
-      .then((res) => {
-        if (!res.ok) throw Error("Could not fetch data for that resource");
-        return res.json();
-      })
-      .then((data) => {
-        if (data.updateSuccess) startFade("/");
-      });
+    let response;
+    try {
+      response = await fetch("/api/flashcards/" + setID, requestOptions);
+    } catch (err) {
+      return setError(err);
+    }
+    if (!response.ok) return setError(response);
+
+    const data = await response.json();
+    if (data.updateSuccess) startFade("/");
   }
 
   const overlayVariants = {
@@ -164,56 +168,62 @@ export default function SessionReport({ setID, setName, flashcards, retry }) {
       animate="visible"
       exit="exit"
     >
-      <Frame variants={frameVariants} onAnimationComplete={handleVisibleReport}>
-        <Title>Session results</Title>
-        <SessionName>
-          for <i>{setName}</i>
-        </SessionName>
-        <Details>
-          <Row>
-            <Label>Correct:</Label>
-            <Value ref={correctRef}>0</Value>
-          </Row>
-          <Row>
-            <Label>Incorrect:</Label>
-            <Value ref={incorrectRef}>0</Value>
-          </Row>
-          <Row>
-            <AvgValueLabel singleArrow={singleArrow}>
-              Avg. lvl delta:
-            </AvgValueLabel>
-            <AvgValueContainer>
-              <motion.div ref={avglvlRef}>0</motion.div>
-              <SelectArrowContainer
-                upArrow={avglvlArrowUp}
-                singleArrow={singleArrow}
-                initial={{ opacity: 0 }}
-                animate={avgLvlArrowsControls}
-              >
-                <ArrowHead1SVG
-                  dim="22"
-                  color={avglvlArrowUp ? "#58b55b" : "#c93d36"}
-                />
-                <ArrowHead1SVG
-                  dim="22"
-                  color={
-                    singleArrow
-                      ? "transparent"
-                      : avglvlArrowUp
-                      ? "#58b55b"
-                      : "#c93d36"
-                  }
-                />
-              </SelectArrowContainer>
-            </AvgValueContainer>
-          </Row>
-        </Details>
-        <SessionReportButtons
-          saveCallback={saveResults}
-          retryCallback={retry}
-          singleArrow={singleArrow}
-        />
-      </Frame>
+      {error && <ErrorAlert error={error} />}
+      {!error && (
+        <Frame
+          variants={frameVariants}
+          onAnimationComplete={handleVisibleReport}
+        >
+          <Title>Session results</Title>
+          <SessionName>
+            for <i>{setName}</i>
+          </SessionName>
+          <Details>
+            <Row>
+              <Label>Correct:</Label>
+              <Value ref={correctRef}>0</Value>
+            </Row>
+            <Row>
+              <Label>Incorrect:</Label>
+              <Value ref={incorrectRef}>0</Value>
+            </Row>
+            <Row>
+              <AvgValueLabel singleArrow={singleArrow}>
+                Avg. lvl delta:
+              </AvgValueLabel>
+              <AvgValueContainer>
+                <motion.div ref={avglvlRef}>0</motion.div>
+                <SelectArrowContainer
+                  upArrow={avglvlArrowUp}
+                  singleArrow={singleArrow}
+                  initial={{ opacity: 0 }}
+                  animate={avgLvlArrowsControls}
+                >
+                  <ArrowHead1SVG
+                    dim="22"
+                    color={avglvlArrowUp ? "#58b55b" : "#c93d36"}
+                  />
+                  <ArrowHead1SVG
+                    dim="22"
+                    color={
+                      singleArrow
+                        ? "transparent"
+                        : avglvlArrowUp
+                        ? "#58b55b"
+                        : "#c93d36"
+                    }
+                  />
+                </SelectArrowContainer>
+              </AvgValueContainer>
+            </Row>
+          </Details>
+          <SessionReportButtons
+            saveCallback={saveResults}
+            retryCallback={retry}
+            singleArrow={singleArrow}
+          />
+        </Frame>
+      )}
     </Overlay>
   );
 }
