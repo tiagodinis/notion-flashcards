@@ -2,6 +2,8 @@ const { Client } = require("@notionhq/client");
 const {
   getEuropeCapitalsData,
   getBotanicalNamesData,
+  get80sMusicPopQuiz,
+  getTVPopCultureTrivia,
   getFillerSetData,
 } = require("./demoData");
 
@@ -174,9 +176,11 @@ async function resetDemo(req, res) {
   await Promise.all([
     createSet(getEuropeCapitalsData()),
     createSet(getBotanicalNamesData()),
-    createSet(getFillerSetData(0)),
-    createSet(getFillerSetData(1)),
-    createSet(getFillerSetData(2)),
+    createSet(get80sMusicPopQuiz()),
+    createSet(getTVPopCultureTrivia()),
+    createSet(getFillerSetData(0, 0)),
+    createSet(getFillerSetData(1, 2)),
+    createSet(getFillerSetData(4, 8)),
   ]);
   await updateFromNotion([updateFlashcards(), updateSets()]);
   sendSets(req, res);

@@ -83,15 +83,252 @@ function getBotanicalNamesData() {
   };
 }
 
-function getFillerSetData(index) {
+function get80sMusicPopQuiz() {
   return {
-    setName: "Filler set " + (index + 1),
+    setName: "80s Music Pop Quiz",
     cards: [
-      { front: "Front 1\n", back: "Back 1", lvl: index, expired_in: index * 3 },
-      { front: "Front 2\n", back: "Back 2", lvl: index, expired_in: index * 3 },
-      { front: "Front 3\n", back: "Back 3", lvl: index, expired_in: index * 3 },
-      { front: "Front 4\n", back: "Back 4", lvl: index, expired_in: index * 3 },
-      { front: "Front 5\n", back: "Back 5", lvl: index, expired_in: index * 3 },
+      {
+        front:
+          "Which 80s star is recognised by Guinness World Records as the best-selling female recording artist of all time?",
+        back: "Madonna",
+        lvl: 0,
+        expired_in: 0,
+      },
+      {
+        front: "Who encouraged the world to ‘Get Down on It’ in 1981?",
+        back: "Kool and the Gang",
+        lvl: 0,
+        expired_in: 0,
+      },
+      {
+        front:
+          "Depeche mode had their first major U.S hit in 1981 with which song?",
+        back: "Just Can’t Get Enough",
+        lvl: 0,
+        expired_in: 0,
+      },
+      {
+        front: "Who claimed that ‘I’m Still Standing’ in 1983?",
+        back: "Elton John",
+        lvl: 0,
+        expired_in: 0,
+      },
+      {
+        front: "David Bowie appeared in what cult film in 1986?",
+        back: "Labyrinth",
+        lvl: 0,
+        expired_in: 0,
+      },
+      {
+        front:
+          "‘Walk like an Egyptian’ was a hit song for which group in 1986?",
+        back: "The Bangles",
+        lvl: 0,
+        expired_in: 0,
+      },
+      {
+        front: "Huey, from Huey Lewis and the News, played which instrument?",
+        back: "Harmonica",
+        lvl: 0,
+        expired_in: 0,
+      },
+      {
+        front: "Which country do iconic pop trio A-ha come from?",
+        back: "Norway",
+        lvl: 0,
+        expired_in: 0,
+      },
+      {
+        front:
+          "In what 80s year did Queen inform everyone that another one had bitten the dust?",
+        back: "1980",
+        lvl: 0,
+        expired_in: 0,
+      },
+      {
+        front:
+          "Michael Jackson debuted his trademark moonwalk during which song in 1983?",
+        back: "Billie Jean",
+        lvl: 0,
+        expired_in: 0,
+      },
+      {
+        front:
+          "Annie Lennox is the most famous of the Eurythmics duo. Who was the other member?",
+        back: "Dave Stewart",
+        lvl: 0,
+        expired_in: 0,
+      },
+      {
+        front:
+          "Human League had a Christmas number one in 1981 with what song?",
+        back: "Don’t You Love Me",
+        lvl: 0,
+        expired_in: 0,
+      },
+      {
+        front: "Which The Cure album features the song ‘Fascination Street’?",
+        back: "Disintegration",
+        lvl: 0,
+        expired_in: 0,
+      },
+      {
+        front:
+          "In what year of the 80s did Madness split, eventually reforming as The Madness?",
+        back: "1988",
+        lvl: 0,
+        expired_in: 0,
+      },
+      {
+        front: "Which female singer won a grammy for best new artist in 1985?",
+        back: "Cyndi Lauper",
+        lvl: 0,
+        expired_in: 0,
+      },
+      {
+        front:
+          "Which of U2’s members started the band in Dublin when he was just 14?",
+        back: "Larry Mullen Jr.",
+        lvl: 0,
+        expired_in: 0,
+      },
+      {
+        front:
+          "Who broke out of a duo to go solo in 1987 and found immediate success with his song ‘Faith’?",
+        back: "George Michael",
+        lvl: 0,
+        expired_in: 0,
+      },
+      {
+        front:
+          "Starting in 1981, Duran Duran have released how many albums to date?",
+        back: "14",
+        lvl: 0,
+        expired_in: 0,
+      },
+      {
+        front:
+          "The most awarded female act of all time goes to… which 80s sensation?",
+        back: "Whitney Houston",
+        lvl: 0,
+        expired_in: 0,
+      },
+      {
+        front:
+          "Welcome to the Pleasuredome was the debut studio album of which band?",
+        back: "Frankie goes to Hollywood",
+        lvl: 0,
+        expired_in: 0,
+      },
+      {
+        front:
+          "What number do you get if you subtract the amount of Nena’s luftballons from the name of Prince’s 5th studio album?",
+        back: "1900",
+        lvl: 0,
+        expired_in: 0,
+      },
+      {
+        front:
+          "Which fruit-themed band scored a Billboard no.1 in 1986 with ‘Venus’?",
+        back: "Bananarama",
+        lvl: 0,
+        expired_in: 0,
+      },
+      {
+        front:
+          "From 1982 to 1984, Robert Smith was the guitarist of two bands: The Cure and who else?",
+        back: "Siouxsie and the Banshees",
+        lvl: 0,
+        expired_in: 0,
+      },
+    ],
+  };
+}
+
+function getTVPopCultureTrivia() {
+  return {
+    setName: "TV Pop Culture Trivia",
+    cards: [
+      {
+        front:
+          "What is the longest-running animated television show in the United States?",
+        back: "The Simpsons",
+        lvl: 6,
+        expired_in: 10,
+      },
+      {
+        front:
+          "What TV show aired the first interracial kiss in the United States?",
+        back: "Star Trek",
+        lvl: 6,
+        expired_in: 10,
+      },
+      {
+        front:
+          "Which Friends character was Courteney Cox originally asked to play?",
+        back: "Rachel",
+        lvl: 6,
+        expired_in: 10,
+      },
+      {
+        front:
+          "In which state did the short-lived series Freaks and Geeks take place?",
+        back: "Michigan",
+        lvl: 6,
+        expired_in: 10,
+      },
+      {
+        front:
+          "Which actor narrates How I Met Your Mother as an older version of Ted?",
+        back: "Bob Saget",
+        lvl: 6,
+        expired_in: 10,
+      },
+      {
+        front: "In which Grey’s Anatomy season did Dr. Derek Shepherd die?",
+        back: "Season 11",
+        lvl: 6,
+        expired_in: 10,
+      },
+      {
+        front:
+          "What’s the name of the ice cream parlor Steve and Robin work at in season three of Stranger Things?",
+        back: "Scoops Ahoy!",
+        lvl: 6,
+        expired_in: 10,
+      },
+      {
+        front:
+          "Which high school subject did Walter White teach in Breaking Bad?",
+        back: "Chemistry",
+        lvl: 6,
+        expired_in: 10,
+      },
+      {
+        front:
+          "Finish this quote from The Office: “I’m not superstitious, but I am a ___ ___.”",
+        back: "“little stitious”",
+        lvl: 6,
+        expired_in: 10,
+      },
+      {
+        front:
+          "What was the first cable television series to win an Emmy for Outstanding Drama Series?",
+        back: "The Sopranos",
+        lvl: 6,
+        expired_in: 10,
+      },
+    ],
+  };
+}
+
+function getFillerSetData(lvl, expiration) {
+  return {
+    setName: `Filler set`,
+    cards: [
+      { front: "Front", back: "Back", lvl: lvl, expired_in: expiration },
+      { front: "Front", back: "Back", lvl: lvl, expired_in: expiration },
+      { front: "Front", back: "Back", lvl: lvl, expired_in: expiration },
     ],
   };
 }
@@ -99,5 +336,7 @@ function getFillerSetData(index) {
 module.exports = {
   getEuropeCapitalsData,
   getBotanicalNamesData,
+  get80sMusicPopQuiz,
+  getTVPopCultureTrivia,
   getFillerSetData,
 };
