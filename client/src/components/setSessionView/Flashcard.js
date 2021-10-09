@@ -235,7 +235,7 @@ const sideToContentDiff = 2 * scrollbarLeftOffset + scrollbarWidth;
 
 const FlashcardContainer = styled(motion.article)`
   position: absolute;
-  width: calc(min(100vw - ${baseMargin * 2}px, 460px));
+  width: calc(min(100vw - ${baseMargin * 2}px - 10px, 470px));
   height: calc(min(100vh - 160px, 660px));
 
   border-radius: 25px;
@@ -255,7 +255,7 @@ const FlashcardContainer = styled(motion.article)`
 const SideContainer = styled(motion.div)`
   position: absolute;
   top: ${basePadding}px;
-  width: calc(min(100vw - ${(basePadding + baseMargin) * 2}px, 400px));
+  width: calc(min(100vw - ${(basePadding + baseMargin) * 2}px - 10px, 400px));
   height: calc(min(100vh - ${basePadding * 2 + 160}px, 600px));
   padding-left: ${scrollbarLeftOffset + scrollbarWidth}px;
   padding-right: ${scrollbarLeftOffset}px;
@@ -291,7 +291,7 @@ const Content = styled.div`
   /* (!) Only start breaking words when minFontSize is reached */
   width: ${(props) =>
     props.scrollbarVisible
-      ? `calc(min(100vw - ${(basePadding + baseMargin) * 2}px, 400px))`
+      ? `calc(min(100vw - ${(basePadding + baseMargin) * 2}px - 10px, 400px))`
       : "auto"};
   overflow-wrap: break-word;
   font-size: ${(props) => props.fontSize}px;

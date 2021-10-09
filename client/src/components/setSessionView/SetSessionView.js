@@ -119,7 +119,7 @@ export default function SetSessionView() {
                     initial={false}
                     animate={{
                       scale: 0.9,
-                      x: lerp(getPercentage(width, 320, 490), 28, 39),
+                      x: lerp(getPercentage(width, 320, 490), 28, 40),
                     }}
                   />
                 )}
@@ -131,7 +131,7 @@ export default function SetSessionView() {
                     initial={false}
                     animate={{
                       scale: 0.96,
-                      x: lerp(getPercentage(width, 320, 490), 12, 17),
+                      x: lerp(getPercentage(width, 320, 490), 12.5, 17),
                     }}
                   />
                 )}
@@ -179,9 +179,8 @@ const CardStack = styled.main`
   }
 
   position: absolute;
-  --width: calc(min(100vw - 20px, 460px));
-  left: calc(50vw - var(--width) * 0.5);
-  width: var(--width);
+  --width: calc(min(100vw - 20px, 480px));
+  left: calc(50vw - var(--width) * 0.5 - 0px);
 
   display: flex;
 `;
