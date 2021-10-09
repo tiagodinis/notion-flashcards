@@ -311,10 +311,14 @@ const Overlay = styled(motion.div)`
 `;
 
 const StampContainer = styled(motion.div)`
+  @media (min-width: 400px) {
+    font-size: clamp(64px, 14vh, 96px);
+  }
+
   /* (!) Keep message tilt even if card is flipped */
   transform: rotate(${(props) => (props.isFlipped ? 50 : -50)}deg)
     rotateY(${(props) => (props.isFlipped ? 180 : 0)}deg);
-  font-size: 64px;
+  font-size: clamp(64px, 8vh, 96px);
   padding: 5px;
   border-radius: 50px;
   border: 3px dashed ${(props) => overlayMsgColorMap[props.overlayMsg]};
