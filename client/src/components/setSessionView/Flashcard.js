@@ -14,7 +14,8 @@ export default function Flashcard(props) {
   const x = useMotionValue(0);
   const y = useMotionValue(0);
   const isPresent = useIsPresent();
-  const dragElastic = 0.3;
+  const dragElastic = lerp(getPercentage(width, 320, 800), 0.4, 0.2);
+  console.log(dragElastic);
 
   // Overlay and stamp opacity while dragging
   const xOverlayLimit = 50;
