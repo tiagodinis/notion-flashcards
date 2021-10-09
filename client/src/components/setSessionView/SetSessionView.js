@@ -16,14 +16,13 @@ export default function SetSessionView() {
   const flashcards = useRef([]);
   const setName = useRef("");
   const [showable, setShowable] = useState(null);
-  const [exitX, setExitX] = useState("100%");
   const [progress, setProgress] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
   const [resultModalOpen, setResultModalOpen] = useState(false);
   let { setID } = useParams();
   const [error, setError] = useState("");
   const { startFade, setFadeOpacityTarget } = useContext(FadeContext);
-  const { width, height } = useWindowSize();
+  const { width } = useWindowSize();
 
   async function fetchSessionData() {
     let response;
@@ -72,8 +71,8 @@ export default function SetSessionView() {
 
   function skip() {
     if (showable.length > 1) {
-      setShowable(getShowableCardsFromIndex(showable[1]));
       setIsFlipped(false);
+      setShowable(getShowableCardsFromIndex(showable[1]));
     }
   }
 
@@ -140,15 +139,11 @@ export default function SetSessionView() {
                     key={showable[0]}
                     pos={0}
                     cardData={flashcards.current[showable[0]]}
-                    exitX={exitX}
-                    setExitX={setExitX}
                     skip={skip}
                     setCardResult={setCardResult}
                     animate={{ scale: 1, x: 0 }}
                     drag
                     canFlip
-                    width={width}
-                    height={height}
                     isFlipped={isFlipped}
                     setIsFlipped={(newFlipState) => setIsFlipped(newFlipState)}
                   />

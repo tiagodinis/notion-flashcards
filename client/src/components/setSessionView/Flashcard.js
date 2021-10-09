@@ -10,6 +10,7 @@ import { clamp, getPercentage, lerp } from "../../utilities/math";
 import useWindowSize from "../../utilities/custom_hooks/useWindowSize";
 
 export default function Flashcard(props) {
+  const { width, height } = useWindowSize();
   const x = useMotionValue(0);
   const y = useMotionValue(0);
   const isPresent = useIsPresent();
@@ -39,8 +40,8 @@ export default function Flashcard(props) {
   // Card rotation while dragging
   const xRotLimit = 80;
   const yRotLimit = 70;
-  const maxXRot = lerp(getPercentage(props.height, 500, 820), 15, 5);
-  const maxYRot = lerp(getPercentage(props.height, 500, 820), 10, 5);
+  const maxXRot = lerp(getPercentage(height, 500, 820), 15, 5);
+  const maxYRot = lerp(getPercentage(height, 500, 820), 10, 5);
   const rotateZByX = useTransform(
     x,
     [-xRotLimit, xRotLimit],
@@ -94,6 +95,7 @@ export default function Flashcard(props) {
     }
   }
 
+  const [exitX, setExitX] = useState("100%");
   // If > threshold, save card results and set appropriate exit target
   function handleDragEnd(event, info) {
     setIsRecovered(false); // Lock interactivity
@@ -103,21 +105,16 @@ export default function Flashcard(props) {
     if (mValues.y === 0) {
       // Horizontal movement
       if (mValues.x <= -xOverlayLimit) {
-        props.setExitX(-xAnswerLimit);
+        setExitX(-xAnswerLimit);
         props.setCardResult(false);
       } else if (mValues.x >= xOverlayLimit) {
-        props.setExitX(xAnswerLimit);
+        setExitX(xAnswerLimit);
         props.setCardResult(true);
       }
     } else if (mValues.x === 0) {
       // Vertical movement
-      if (mValues.y <= -yOverlayLimit) {
-        props.setExitX(0);
-        console.log("undo");
-      } else if (mValues.y >= yOverlayLimit) {
-        props.setExitX(0);
-        props.skip();
-      }
+      if (mValues.y <= -yOverlayLimit) console.log("undo");
+      else if (mValues.y >= yOverlayLimit) props.skip();
     }
   }
 
@@ -131,7 +128,6 @@ export default function Flashcard(props) {
   const outerEl = useRef();
   const frontEl = useRef();
   const backEl = useRef();
-  const { width, height } = useWindowSize();
   const prevDims = useRef({ width: 0, height: 0 });
 
   useLayoutEffect(() => {
@@ -205,7 +201,7 @@ export default function Flashcard(props) {
       animate={{ ...props.animate, rotateY: props.isFlipped ? 180 : 0 }}
       transition={{ duration: 0.4, ease: "backOut" }}
       exit={{
-        x: props.exitX,
+        x: exitX,
         opacity: 0,
         scale: 0.75,
         transition: { duration: 0.2 },
