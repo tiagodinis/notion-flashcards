@@ -179,9 +179,9 @@ const CardStack = styled.main`
   }
 
   position: absolute;
-  --width: calc(min(100vw - 20px, 470px));
+  --width: calc(min(100vw - 20px, 460px));
   left: calc(50vw - var(--width) * 0.5);
-  width: var(---width);
+  width: var(--width);
 
   display: flex;
 `;
