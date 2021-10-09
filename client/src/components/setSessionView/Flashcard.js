@@ -146,8 +146,8 @@ export default function Flashcard(props) {
 
     function adjustFSize(oRect, rect, fontSize, setFontSize, setScrollbar) {
       const isOverflowing =
-        rect.height > oRect.height ||
-        rect.width > oRect.width - sideToContentDiff;
+        rect.height >= oRect.height ||
+        rect.width >= oRect.width - sideToContentDiff;
       if (fontSize === minFontSize) {
         setScrollbar(isOverflowing);
         return;
@@ -257,6 +257,7 @@ const SideContainer = styled(motion.div)`
   padding-right: ${scrollbarLeftOffset}px;
   backface-visibility: hidden;
 
+  overflow-x: hidden;
   overflow-y: scroll;
   scrollbar-width: thin;
   scrollbar-color: #cdcdcd ${(props) => props.color};
@@ -309,6 +310,7 @@ const Overlay = styled(motion.div)`
 const StampContainer = styled(motion.div)`
   @media (min-width: 400px) {
     font-size: clamp(64px, 14vh, 96px);
+    border: 6px dashed ${(props) => overlayMsgColorMap[props.overlayMsg]};
   }
 
   /* (!) Keep message tilt even if card is flipped */
