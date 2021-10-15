@@ -122,9 +122,10 @@ async function updateFlashcardExpirations(req, res) {
   res.json({ updateSuccess: true });
 }
 
-async function recachedSets(req, res) {
-  await updateFromNotion([updateFlashcards(), updateSets()]);
-  sendSets(req, res);
+function recachedSets(req, res) {
+  updateFromNotion([updateFlashcards(), updateSets()]).then((data) =>
+    sendSets(req, res)
+  );
 }
 
 async function resetDemo(req, res) {

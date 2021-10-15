@@ -241,7 +241,9 @@ const FlashcardContainer = styled(motion.article)`
   user-select: none;
   transform-style: preserve-3d;
   /* (!) Make sure exit animation stays on top of everything */
-  z-index: ${(props) => (!props.isPresent ? 100 : 0)};
+  z-index: ${(props) => (props.isPresent ? 0 : 100)};
+  /* (!) Allow dragging of next cards while exiting */
+  pointer-events: ${(props) => (props.isPresent ? "auto" : "none")};
 
   display: flex;
   flex-direction: column;

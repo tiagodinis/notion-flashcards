@@ -14,6 +14,7 @@ app.get("/api/recached-sets", notion.recachedSets);
 app.get("/api/reset-demo", notion.resetDemo);
 
 if (process.env.NODE_ENV === "production") {
+  let path = require("path");
   app.use(express.static("client/build"));
   app.get("*", (req, res) =>
     res.sendFile(path.resolve(__dirname, "client", "build", "index.html"))
