@@ -15,7 +15,6 @@ export default function Flashcard(props) {
   const y = useMotionValue(0);
   const isPresent = useIsPresent();
   const dragElastic = lerp(getPercentage(width, 320, 800), 0.4, 0.2);
-  console.log(dragElastic);
 
   // Overlay and stamp opacity while dragging
   const xOverlayLimit = 50;
@@ -88,7 +87,7 @@ export default function Flashcard(props) {
       x.set(clamp(x.get(), -xRotLimit, xRotLimit));
       if (x.get() > 0) setOverlayMsg("Correct");
       else if (x.get() < 0) setOverlayMsg("Incorrect");
-    } else if (x.get() === 0) {
+    } else {
       // Vertical movement
       y.set(clamp(y.get(), -yRotLimit, yRotLimit));
       if (y.get() > 0) setOverlayMsg("Skip");
@@ -96,6 +95,7 @@ export default function Flashcard(props) {
     }
   }
 
+  const flippedSkip = useRef(false); // (!) Deals with flipped skip rotation bug (a bit hacky...)
   const [exitX, setExitX] = useState("100%");
   // If > threshold, save card results and set appropriate exit target
   function handleDragEnd(event, info) {
@@ -112,10 +112,13 @@ export default function Flashcard(props) {
         setExitX(xAnswerLimit);
         props.setCardResult(true);
       }
-    } else if (mValues.x === 0) {
+    } else {
       // Vertical movement
       if (mValues.y <= -yOverlayLimit) console.log("undo");
-      else if (mValues.y >= yOverlayLimit) props.skip();
+      else if (mValues.y >= yOverlayLimit) {
+        flippedSkip.current = props.isFlipped;
+        props.skip();
+      }
     }
   }
 
@@ -211,7 +214,11 @@ export default function Flashcard(props) {
     >
       <Side isFrontSide />
       <Side />
-      <Overlay style={{ backgroundColor: overlayBackgroundColor }}>
+      <Overlay
+        flippedSkip={flippedSkip}
+        isFlipped={props.isFlipped}
+        style={{ backgroundColor: overlayBackgroundColor }}
+      >
         <StampContainer
           isFlipped={props.isFlipped}
           overlayMsg={overlayMsg}
@@ -305,6 +312,11 @@ const Overlay = styled(motion.div)`
   height: 100%;
   border-radius: 25px;
 
+  transform: rotateY(
+    ${(props) =>
+      props.isFlipped ? 180 : props.flippedSkip.current ? 180 : 0}deg
+  );
+
   display: flex;
   justify-content: center;
   align-items: center;
@@ -317,8 +329,7 @@ const StampContainer = styled(motion.div)`
   }
 
   /* (!) Keep message tilt even if card is flipped */
-  transform: rotate(${(props) => (props.isFlipped ? 50 : -50)}deg)
-    rotateY(${(props) => (props.isFlipped ? 180 : 0)}deg);
+  transform: rotate(-50deg);
   font-size: clamp(64px, 8vh, 96px);
   padding: 5px;
   border-radius: 50px;
